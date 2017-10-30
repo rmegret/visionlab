@@ -16,7 +16,6 @@ jupyter nbconvert --to python test.ipynb --template=mytemplate.tpl
     # In[{{ cell.execution_count if cell.execution_count else ' ' }}]:
 {%- endif %}
 #}
-
 # <codecell>
 {% endblock in_prompt %}
 
