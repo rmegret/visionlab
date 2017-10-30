@@ -23,6 +23,11 @@ required packages installed in order to participate fully.
   - `sklearn` >= 0.18
   
   Please see "Test your setup" below.
+  
+  Although not required for the main labs, we may use also OpenCV later on, 
+  which you can install from the channel `menpo`:
+  
+      conda install -c menpo opencv3
 
 - Jupyter
 
@@ -51,19 +56,22 @@ or
 
 ## Test your setup
 
-Please switch into the repository you downloaded in the previous step, and run `check_setup.py`
+Please switch into the repository you downloaded in the previous step, and run 
+
+    python check_setup.py
+
 to validate your installation.
 
 On my computer, I see (but your version numbers may differ):
 
 ```
 [✓] scikit-image  0.13.0
-[✓] scipy         0.19.0
-[✓] matplotlib    2.0.0
-[✓] notebook      5.0.0
-[✓] scikit-learn  0.18.1
+[✓] scipy         0.19.1
+[✓] matplotlib    2.1.0
+[✓] notebook      5.1.0
+[✓] scikit-learn  0.19.1
 ```
 
-**If you do not have a working setup, please contact the instructors.**
+**If you do not have a working setup, please contact the instructor.**
 
 
