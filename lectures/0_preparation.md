@@ -37,11 +37,17 @@ required packages installed in order to participate fully.
 
 ## Download lecture material
 
-There are two ways of downloading the lecture materials:
+For the class, we will use a modified version of the [scikit-image tutorials](https://github.com/scikit-image/skimage-tutorials)
 
-1. Get the [ZIP file from GitHub](https://github.com/scikit-image/skimage-tutorials/archive/master.zip)
-2. Clone the repository at
-    [https://github.com/scikit-image/skimage-tutorials](https://github.com/scikit-image/skimage-tutorials)
+To download the lecture materials, clone the following repo: [https://github.com/rmegret/visionlab](https://github.com/rmegret/visionlab)
+
+
+    git clone --depth 1 git@github.com:rmegret/visionlab.git
+
+or
+
+    git clone --depth 1 https://github.com/rmegret/visionlab.git
+
 
 ## Test your setup
 
