@@ -4,7 +4,7 @@ Computer Vision labs
 These labs using python are based on [scikit-image tutorials](https://github.com/scikit-image/skimage-tutorials). 
 
 Modified and extended for the class CCOM4995 Topics in Computer Science: Computer Vision at University of Puerto Rico, Río Piedras campus, by 
-Rëmi Mégret, 2017.
+Rémi Mégret, 2017.
 
 Other materials will be shared on [Moodle](https://online.uprrp.edu/course/view.php?id=12328).
 
