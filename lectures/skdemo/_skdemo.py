@@ -136,18 +136,23 @@ def add_colorbar(im, aspect=20, pad_fraction=0.5, **kwargs):
 
 def colorbars(axes=None, fig=None, return_handles=False, 
               aspect=20, pad_fraction=0.5, **kwargs):
-    # Add colorbars to all axes that contain an image
-    # axes: Axes object or list of Axes
-    # fig: if axes is None, figure from which to extract axes
-    # Returns a list of Colorbar objects
-    if (axes==None):
-        if (fig==None):
+    """
+    Add colorbars to all axes that contain an image
+    `axes`: axes to which colorbars will be added
+            Axes object, list of Axes or array of Axes
+    `fig`: if `axes` is None, figure from which to extract axes
+         if both `axes` and `fig` are None, apply to current figure
+    Returns a list of Colorbar objects
+    """
+    if (axes is None):
+        if (fig is None):
             fig = plt.gcf()
         axes=fig.axes
-    if (type(axes) is list):
+    if (type(axes) is list or type(axes) is np.ndarray):
         cbars=[]
-        for ax in plt.gcf().axes:
-            cbars.extend(colorbars(ax, return_handles=True))
+        for ax in axes:
+            cb = colorbars(ax, return_handles=True)
+            cbars.extend(cb)
     else:
         imgs=axes.images
         if (len(imgs)>0):
