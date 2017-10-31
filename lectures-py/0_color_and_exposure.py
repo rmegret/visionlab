@@ -3,57 +3,74 @@
 
 
 
-
-# <codecell>
-
-from __future__ import division, print_function
-import numpy as np
-import matplotlib.pyplot as plt
-%matplotlib inline   
-
-
 # <markdowncell>
 # <slide>
 # # Color and exposure
+# 
+# __Outline:__
+# - Basic image manipulation
+# - Histograms
+# - Color spaces
 
 
 # <markdowncell>
-# <notes>
+# <->
 # As discussed earlier, images are just numpy arrays. The numbers in those
 # arrays correspond to the intensity of each pixel (or, in the case of a color
 # image, the intensity of a specific color). To manipulate these, `scikit-image`
 # provides the `color` and `exposure` modules.
 
 
-# <markdowncell>
-# ## Basic image manipulation
+# <codecell>
+
+%load_ext autoreload
+%autoreload 2   
+
+
+# <codecell>
+
+# Basic imports for Numpy and Matplotlib
+from __future__ import division, print_function
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+from skimage import data
+import skdemo   
 
 
 # <markdowncell>
-# <notes>
+# <slide>
+# ## Intro
+
+
+# <markdowncell>
+# <->
 # Recall that color images are arrays with pixel rows and columns as the first
 # two dimensions (just like a gray-scale image), plus a 3rd dimension that
 # describes the RGB color channels.
 
 
-
 # <codecell>
-
-from skimage import data
 
 color_image = data.chelsea()
 
-print(color_image.shape)
+print(color_image.shape) 
 plt.imshow(color_image);   
 
 
 # <markdowncell>
-# <fragment>
+# <slide>
+# ## Basic image manipulation
+
+
+# <markdowncell>
+# <subslide>
 # ### Slicing and indexing
 
 
 # <markdowncell>
-# <notes>
+# <->
 # Since images are just arrays, we can manipulate them as we would any other
 # array.
 # 
@@ -62,24 +79,23 @@ plt.imshow(color_image);
 # Since Python is zero-indexed, we can write the following:
 
 
-
 # <codecell>
 
 red_channel = color_image[:, :, 0]  # or color_image[..., 0]   
 
 
 # <markdowncell>
+# <subslide>
 # But when we plot the red channel...
-
 
 
 # <codecell>
 
-plt.imshow(red_channel);   
+plt.imshow(red_channel, cmap='gray');   
 
 
 # <markdowncell>
-# <notes>
+# <fragment>
 # Obviously that's not red at all. The reason is that there's nothing to tell us
 # that this array is supposed to be red: It's just a 2D array with a height,
 # width, and intensity value---and no color information.
@@ -91,31 +107,35 @@ plt.imshow(red_channel);
 # channel appropriately.
 
 
-
 # <codecell>
 
 red_channel.shape   
 
 
 # <markdowncell>
-# <notes>
-# The shape of this array is the same as it would be for any gray-scale image.
-
-
-# <markdowncell>
+# <skip>
 # ---
 
 
 # <markdowncell>
-# ## <span class="exercize">Exercise: three colours</span>
-# 
-# Consider the following image (``images/balloon.jpg``):
-# 
-# <img src="../images/balloon.jpg"/>
+# <slide>
+# ### <span class="exercize">Exercise: three colours</span>
 
 
 # <markdowncell>
-# <fragment>
+# <->
+# Consider the following image:
+
+
+# <codecell>
+
+from skimage import io
+color_image = io.imread('../images/balloon.jpg')
+plt.imshow(color_image);   
+
+
+# <markdowncell>
+# <subslide>
 # Split this image up into its three components, red, green and blue, and
 # display each separately.
 # 
@@ -126,57 +146,54 @@ red_channel.shape
 # import skdemo
 # skdemo.imshow_all(image0, image1, image2, ...)
 # ```
-# 
-# Or, simply use ``matplotlib.subplots``:
-# 
-# ```python
-# plt, axes = plt.subplots(1, 4)
-# axes[0].imshow(image0)
-# axes[1].imshow(image1)
-# etc.
-# ```
-
-
-
-# <codecell>
-
-from skimage import io
-color_image = io.imread('../images/balloon.jpg')   
-
 
 
 # <codecell>
 
 import skdemo
-#skdemo.  # <TAB>   
 
+# Uncomment and press <TAB> to see available functions in `skdemo`
+#skdemo.  # <TAB>   
 
 
 # <codecell>
 
 # This code is just a template to get you started.
-red_image = np.zeros_like(color_image)
-green_image = np.zeros_like(color_image)
-blue_image = np.zeros_like(color_image)
+red_image = np.ones((1,1)) # TODO: replace with your code
+green_image = np.ones((1,1)) # TODO
+blue_image = np.ones((1,1)) # TODO
 
 skdemo.imshow_all(color_image, red_image, green_image, blue_image)   
 
 
 # <markdowncell>
+# <subslide>
+# Or, simply use ``matplotlib.subplots``:
+
+
+# <codecell>
+
+fig, axes = plt.subplots(1, 4, figsize=(10,2))
+axes[0].imshow(color_image)
+axes[1].imshow(green_image)
+# etc...   
+
+
+# <markdowncell>
+# <skip>
 # ---
 
 
 # <markdowncell>
 # <slide>
-# #### Combining color-slices with row/column-slices
+# ### Combining color-slices with row/column-slices
 
 
 # <markdowncell>
-# <notes>
+# <->
 # In the examples above, we just manipulate the last axis of the array (i.e. the
 # color channel). As with any NumPy array, however, slicing can be applied to
 # each axis:
-
 
 
 # <codecell>
@@ -195,21 +212,10 @@ plt.imshow(color_patches);
 
 
 # <markdowncell>
-# <notes>
+# <->
 # Histograms are a quick way to get a feel for the global statistics of the
 # image intensity. For example, they can tell you where to set a threshold or
 # how to adjust the contrast of an image.
-
-
-# <markdowncell>
-# <fragment>
-# You might be inclined to plot a histogram using matplotlib's `hist` function:
-
-
-
-# <codecell>
-
-#plt.hist(color_image)   
 
 
 # <markdowncell>
@@ -217,10 +223,6 @@ plt.imshow(color_patches);
 # That didn't work as expected. How would you fix the call above to make it work
 # correctly?
 # (Hint: that's a 2-D array, ``numpy.ravel``)
-
-
-# <markdowncell>
-# ---
 
 
 # <markdowncell>
@@ -238,16 +240,15 @@ plt.imshow(color_patches);
 # * Select reasonable bins based on the image's `dtype`
 
 
-
 # <codecell>
 
-skdemo.imshow_with_histogram?   
+# Uncomment to see help on `imshow_with_histogram`
+#skdemo.imshow_with_histogram?   
 
 
 # <markdowncell>
 # <notes>
 # Using this function, let's look at the histogram of a grayscale image:
-
 
 
 # <codecell>
@@ -272,11 +273,63 @@ skdemo.imshow_with_histogram(image);
 # Now let's look at our color image:
 
 
-
 # <codecell>
 
 cat = data.chelsea()
-skdemo.imshow_with_histogram(cat);   
+skdemo.imshow_with_histogram(cat, xlim=[0,255]);   
+
+
+# <markdowncell>
+# ### Compute and plot histograms using core packages
+
+
+# <markdowncell>
+# How is it done with core functions ? Simplest is to use matplotlib `hist` with
+# a flattened representation given by `ravel`:
+
+
+# <codecell>
+
+# Uncomment to see help on the following functions
+#np.ravel?
+#plt.hist?   
+
+
+# <codecell>
+
+image = cat[...,1]  # Extract channel G
+print("image.shape           =",image.shape, "  image.size =",image.size)
+print("np.ravel(image).shape =",np.ravel(image).shape)
+vals, bins, _ = plt.hist(np.ravel(image), color='g')   
+
+
+# <markdowncell>
+# But this just plots, and does not give us access to the histogram values
+# directly to plot it in a different way
+
+
+# <markdowncell>
+# For more flexibility in the plotting, need to do in 2 steps:
+# - first compute the values of the histogram (`exposure.histogram`)
+# - then plot these values using `plt.plot` or `plt.bar`:
+
+
+# <codecell>
+
+from skimage import exposure
+
+# Uncomment to see help for `histogram`
+#exposure.histogram?   
+
+
+# <codecell>
+
+hist, bin_centers = exposure.histogram(image)
+
+fig, axes = plt.subplots(1,2, figsize=(12,3))
+axes[0].plot(bin_centers, hist, 'g')
+bin_step=bin_centers[1]-bin_centers[0]
+axes[1].bar(bin_centers, hist, width=bin_step, color='g')   
 
 
 # <markdowncell>
@@ -309,11 +362,11 @@ skdemo.imshow_with_histogram(cat);
 # Let's take another look at the gray-scale image from earlier:
 
 
-
 # <codecell>
 
+from skimage import img_as_float, img_as_ubyte
 image = data.camera()
-skdemo.imshow_with_histogram(image);   
+axi,axh = skdemo.imshow_with_histogram(image);   
 
 
 # <markdowncell>
@@ -330,17 +383,15 @@ skdemo.imshow_with_histogram(image);
 # `exposure` subpackage.
 
 
-
 # <codecell>
 
 from skimage import exposure
 high_contrast = exposure.rescale_intensity(image, in_range=(10, 180))   
 
 
-
 # <codecell>
 
-skdemo.imshow_with_histogram(high_contrast);   
+skdemo.imshow_with_histogram(high_contrast,xlim=[-5,260]);   
 
 
 # <markdowncell>
@@ -350,10 +401,10 @@ skdemo.imshow_with_histogram(high_contrast);
 # 180 (in the original image) that were piled into a single bin (i.e. 255).
 
 
-
 # <codecell>
 
-exposure.rescale_intensity?   
+# Uncomment to see help on `rescale_intensity`
+#exposure.rescale_intensity?   
 
 
 # <markdowncell>
@@ -380,7 +431,6 @@ exposure.rescale_intensity?
 # 
 # Let's first look at the cumulative distribution function (CDF) of the image
 # intensities.
-
 
 
 # <codecell>
@@ -414,11 +464,9 @@ skdemo.plot_cdf(image, ax=ax_hist.twinx())
 # produce an equalized image:
 
 
-
 # <codecell>
 
 equalized = exposure.equalize_hist(image)   
-
 
 
 # <codecell>
@@ -434,7 +482,6 @@ skdemo.plot_cdf(equalized, ax=ax_hist.twinx())
 # more even distribution produces a CDF that approximates a straight line.
 # 
 # Notice that the image intensities switch from 0--255 to 0.0--1.0:
-
 
 
 # <codecell>
@@ -453,11 +500,11 @@ equalized.dtype
 # scikit image:
 
 
-
 # <codecell>
 
 import skimage
 
+# Uncomment and press TAB
 #skimage.img_as  # <TAB>   
 
 
@@ -479,11 +526,9 @@ import skimage
 # is helpful:
 
 
-
 # <codecell>
 
 equalized = exposure.equalize_adapthist(image)   
-
 
 
 # <codecell>
@@ -503,7 +548,6 @@ skdemo.plot_cdf(equalized, ax=ax_hist.twinx())
 # time, we have a `uint16` image, which is another common format for images:
 
 
-
 # <codecell>
 
 equalized.dtype   
@@ -516,10 +560,10 @@ equalized.dtype
 # contrast enhancement. You can learn more by checking out the docstring:
 
 
-
 # <codecell>
 
-exposure.equalize_adapthist?   
+# Uncomment to display help on `equalize_adapthist`
+#exposure.equalize_adapthist?   
 
 
 # <markdowncell>
@@ -531,7 +575,6 @@ exposure.equalize_adapthist?
 # <notes>
 # One of the most common uses for image histograms is thresholding. Let's return
 # to the original image and its histogram
-
 
 
 # <codecell>
@@ -548,14 +591,9 @@ skdemo.imshow_with_histogram(image);
 # this image.
 
 
-
 # <codecell>
 
-threshold = 50   
-
-
-
-# <codecell>
+threshold = 50
 
 ax_image, ax_hist = skdemo.imshow_with_histogram(image)
 # This is a bit of a hack that plots the thresholded image over the original.
@@ -581,14 +619,12 @@ ax_hist.axvline(threshold, color='red');
 # slightly different threshold than the one we defined above:
 
 
-
 # <codecell>
 
 # Rename module so we don't shadow the builtin function
-import skimage.filter as filters
+import skimage.filters as filters
 threshold = filters.threshold_otsu(image)
 print(threshold)   
-
 
 
 # <codecell>
@@ -604,11 +640,10 @@ plt.imshow(image > threshold);
 # You can find a few other thresholding methods in the `filter` module:
 
 
-
 # <codecell>
 
-import skimage.filter as filters
-filters.threshold  # <TAB>   
+import skimage.filters as filters
+#filters.threshold  # <TAB>   
 
 
 # <markdowncell>
@@ -628,12 +663,10 @@ filters.threshold  # <TAB>
 # using functions in the `color` module.
 
 
-
 # <codecell>
 
 from skimage import color
 #color.rgb2  # <TAB>   
-
 
 
 # <codecell>
@@ -643,9 +676,10 @@ plt.imshow(color_image);
 
 # <markdowncell>
 # <notes>
+# ### LAB colorspace
+# 
 # Here, we'll look at the LAB (a.k.a. CIELAB) color space (`L` = luminance, `a`
 # and `b` define a 2D description of the actual color or "hue"):
-
 
 
 # <codecell>
@@ -662,36 +696,37 @@ lab_image.shape
 # plot it:
 
 
-
 # <codecell>
 
 plt.imshow(lab_image);   
 
 
-# <markdowncell>
-# <notes>
-# Matplotlib expected an RGB array, and apparently, LAB arrays don't look
-# anything like RGB arrays.
-# 
-# That said, there is some resemblance to the original.
-
-
-
 # <codecell>
 
-skdemo.imshow_all(lab_image[..., 0], lab_image[..., 1], lab_image[..., 2],
-                 titles=['L', 'a', 'b'])   
+from matplotlib.colors import LinearSegmentedColormap
+skdemo.imshow_all(color_image, lab_image[..., 0], lab_image[..., 1], lab_image[..., 2],
+                 titles=['RGB', 'L', 'a', 'b'], limits='auto', size=4)
+
+# Tweak a bit the display to highlight what information each channel brings
+plt.gcf().axes[1].get_images()[0].set_clim(0,100)
+#plt.gcf().axes[2].get_images()[0].set_cmap(LinearSegmentedColormap.from_list('GnMg',[[0.0,1,0.0],[0.9,0,0.1]]))
+#plt.gcf().axes[3].get_images()[0].set_cmap(LinearSegmentedColormap.from_list('BuYl',[[0,0,1],[1,1,0]]))
+
+# Add colorbars except for RGB
+skdemo.colorbars(axes=plt.gcf().axes[1:]); plt.tight_layout()   
 
 
 # <markdowncell>
 # Lab gamut, showing only sRGB colors:
-# <img src="Lab_color_space.svg" width="40%"/>
+# <img src="figs/Lab_color_space.svg" width="60%"/>
 # Image <a
 # href="https://commons.wikimedia.org/wiki/File:Lab_color_space.svg">licensed CC
-# BY-SA by Jacob Rus</a>
+# BY-SA by Jacob Rus</a> (modified for horizontal layout)
 # 
-# Lab is more perceptually uniform than sRGB--better approximates human vision,
-# but there are even better options.
+# `Lab` colorspace has two advantages:
+# - it separates luminance `L` from chrominance information `a` and `b`;
+# - it is more perceptually uniform than sRGB to better approximates human
+# vision.
 
 
 # <markdowncell>
@@ -700,8 +735,10 @@ skdemo.imshow_all(lab_image[..., 0], lab_image[..., 1], lab_image[..., 2],
 
 
 # <markdowncell>
-# ## <span class="exercize">Fun with film</span>
-# 
+# ## <span class="exercize">Exercise: Fun with film</span>
+
+
+# <markdowncell>
 # In the film industry, it is often necessary to impose actors on top of a
 # rendered background.  To do that, the actors are filmed on a "green screen".
 # Here's an example shot (``images/greenscreen.jpg``):
@@ -717,22 +754,43 @@ skdemo.imshow_all(lab_image[..., 0], lab_image[..., 1], lab_image[..., 2],
 # backdrop of the forest?
 
 
+# <codecell>
+
+# Your code here   
+
+
 # <markdowncell>
-# <fragment>
-# ## <span class="exercize">Exploring color spaces</span>
+# <notes>
+# Matplotlib expected an RGB array, and apparently, LAB arrays don't look
+# anything like RGB arrays.
+# 
+# That said, there is some resemblance to the original. To get some sense of the
+# Lab colorspace,
+# let's display instead each channel separately.
 
 
 # <markdowncell>
 # <fragment>
+# ## <span class="exercize">Exercise: Exploring color spaces</span>
+
+
+# <markdowncell>
 # 1. Decompose the Balloon image of earlier into its H, S and V (hue,
 # saturation, value) color components.  Display each component and interpret the
 # result.
-# 
+
+
+# <codecell>
+
+# Your code here   
+
+
+# <markdowncell>
+# <fragment>
 # 2. Use the LAB color space to **isolate the eyes** in the `chelsea` image.
 # Plot the L, a, b components to get a feel for what they do, and see the
 # [wikipedia page](http://en.wikipedia.org/wiki/Lab_colorspace) for more info.
 # Bonus: **Isolate the nose** too.
-
 
 
 # <codecell>
@@ -764,22 +822,3 @@ skdemo.imshow_all(lab_image[..., 0], lab_image[..., 1], lab_image[..., 2],
 # image.org/docs/dev/auto_examples/plot_equalize.html) and [local histogram
 # equalization](http://scikit-
 # image.org/docs/dev/auto_examples/plot_local_equalize.html)
-
-
-# <markdowncell>
-# ---
-# 
-# <div style="height: 400px;"></div>
-
-
-
-# <codecell>
-
-%reload_ext load_style
-%load_style ../themes/tutorial.css   
-
-
-
-# <codecell>
-
-   
