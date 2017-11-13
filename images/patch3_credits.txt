@@ -1,0 +1,17 @@
+The DU BUF and BIGUN Texture Image Database
+http://w3.ualg.pt/~dubuf/pubdat/texture/texture.html
+
+Here are 5 images for testing texture feature extraction and segmentation. Each image contains 7 textures in 16 patches, such that all texture combinations share a common boundary at least once. Some boundaries are straight (horizontal) while others follow a random walk (vertical). Texture amplitudes have been normalised between 0 and 255, and the means and variances are equal.
+
+The coordinates of the three vertical boundaries in patches 1, 2 and 3 can be downloaded into an ASCII file.
+
+Patches 1, 2 and 4 contain aerial textures, 5 is synthetic whereas 3 uses Brodatz. Normally patches 4 and 5 give good results with methods for micro-texture (cooccurrence matrix etc); the others with methods for macro-texture (Gabor filters). Most patches are not easy, but number one is a real challenge!
+
+The file format is 256x256 bytes, 1 byte/pixel, grayscale GIF. You can click on an image in order to download it in GIF format, and you need to use xv or ImageMagick to convert it to raw format that you can easily read in your programs. 
+
+You are FREE to use any of these images in your work and publications, provided that you refer to at least one of the publications given below under References!
+
+References:
+- du Buf, J.M.H. (1992) Abstract processes in texture discrimination. Spatial Vision 6, pp. 221-242.
+- Bigun, J. and du Buf, J.M.H. (1994) N-folded symmetries by complex moments in Gabor space and their application to unsupervised image segmentation. IEEE Trans PAMI-16, pp. 80-87.
+- Bigun, J. and du Buf, J.M.H. (1993) Symmetry interpretation of complex moments and the local power spectrum. Journal of Visual Communication and Image Representation 6, pp. 154-163.
