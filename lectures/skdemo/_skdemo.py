@@ -142,7 +142,10 @@ def colorbars(axes=None, fig=None, return_handles=False,
             Axes object, list of Axes or array of Axes
     `fig`: if `axes` is None, figure from which to extract axes
          if both `axes` and `fig` are None, apply to current figure
-    Returns a list of Colorbar objects
+    `return_handles`: if True, returns a list of Colorbar objects
+    `aspect`: aspect ratio of the colorbar (default 20)
+    `pad_fraction`: space between image and colorbar (default 0.5)
+    `**kwargs`: other parameters passed to `plt.colorbar`
     """
     if (axes is None):
         if (fig is None):
@@ -151,7 +154,9 @@ def colorbars(axes=None, fig=None, return_handles=False,
     if (type(axes) is list or type(axes) is np.ndarray):
         cbars=[]
         for ax in axes:
-            cb = colorbars(ax, return_handles=True)
+            cb = colorbars(ax, return_handles=True, 
+                           aspect=aspect, pad_fraction=pad_fraction,
+                           **kwargs)
             cbars.extend(cb)
     else:
         imgs=axes.images

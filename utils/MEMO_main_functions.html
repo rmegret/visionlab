@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>MEMO_main_functions</title>
+
+
+<style type="text/css">
+body {
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: white;
+  padding: 30px; }
+
+body > *:first-child {
+  margin-top: 0 !important; }
+body > *:last-child {
+  margin-bottom: 0 !important; }
+
+a {
+  color: #4183C4; }
+a.absent {
+  color: #cc0000; }
+a.anchor {
+  display: block;
+  padding-left: 30px;
+  margin-left: -30px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+  position: relative; }
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA09pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoMTMuMCAyMDEyMDMwNS5tLjQxNSAyMDEyLzAzLzA1OjIxOjAwOjAwKSAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUM2NjlDQjI4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUM2NjlDQjM4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5QzY2OUNCMDg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5QzY2OUNCMTg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsQhXeAAAABfSURBVHjaYvz//z8DJYCRUgMYQAbAMBQIAvEqkBQWXI6sHqwHiwG70TTBxGaiWwjCTGgOUgJiF1J8wMRAIUA34B4Q76HUBelAfJYSA0CuMIEaRP8wGIkGMA54bgQIMACAmkXJi0hKJQAAAABJRU5ErkJggg==) no-repeat 10px center;
+  text-decoration: none; }
+
+h1 tt, h1 code {
+  font-size: inherit; }
+
+h2 tt, h2 code {
+  font-size: inherit; }
+
+h3 tt, h3 code {
+  font-size: inherit; }
+
+h4 tt, h4 code {
+  font-size: inherit; }
+
+h5 tt, h5 code {
+  font-size: inherit; }
+
+h6 tt, h6 code {
+  font-size: inherit; }
+
+h1 {
+  font-size: 28px;
+  color: black; }
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #cccccc;
+  color: black; }
+
+h3 {
+  font-size: 18px; }
+
+h4 {
+  font-size: 16px; }
+
+h5 {
+  font-size: 14px; }
+
+h6 {
+  color: #777777;
+  font-size: 14px; }
+
+
+p, blockquote, table, pre, ul, dl, li, ol {
+  margin: 10px 0; 
+  }
+
+
+hr {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+  border: 0 none;
+  color: #cccccc;
+  height: 4px;
+  padding: 0;
+}
+
+body > h2:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+body > h1:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+  body > h1:first-child + h2 {
+    margin-top: 0;
+    padding-top: 0; }
+body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0; }
+
+h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+  margin-top: 0; }
+
+li p.first {
+  display: inline-block; }
+li {
+  margin: 0; 
+  }
+ul, ol {
+  padding-left: 30px; }
+
+ul :first-child, ol :first-child {
+  margin-top: -5px; }
+
+dl {
+  padding: 0; }
+  dl dt {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0;
+    margin: 15px 0 5px; }
+    dl dt:first-child {
+      padding: 0; }
+    dl dt > :first-child {
+      margin-top: 0; }
+    dl dt > :last-child {
+      margin-bottom: 0; }
+  dl dd {
+    margin: 0 0 15px;
+    padding: 0 15px; }
+    dl dd > :first-child {
+      margin-top: 0; }
+    dl dd > :last-child {
+      margin-bottom: 0; }
+
+blockquote {
+  border-left: 4px solid #dddddd;
+  padding: 0 15px;
+  color: #777777; }
+  blockquote > :first-child {
+    margin-top: 0; }
+  blockquote > :last-child {
+    margin-bottom: 0; }
+
+table {
+  padding: 0;border-collapse: collapse; }
+  table tr {
+    border-top: 1px solid #cccccc;
+    background-color: white;
+    margin: 0;
+    padding: 0; }
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8; }
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr td {
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0; }
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0; }
+
+img {
+  max-width: 100%; }
+
+span.frame {
+  display: block;
+  overflow: hidden; }
+  span.frame > span {
+    border: 1px solid #dddddd;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 13px 0 0;
+    padding: 7px;
+    width: auto; }
+  span.frame span img {
+    display: block;
+    float: left; }
+  span.frame span span {
+    clear: both;
+    color: #333333;
+    display: block;
+    padding: 5px 0 0; }
+span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-center > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: center; }
+  span.align-center span img {
+    margin: 0 auto;
+    text-align: center; }
+span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px 0 0;
+    text-align: right; }
+  span.align-right span img {
+    margin: 0;
+    text-align: right; }
+span.float-left {
+  display: block;
+  margin-right: 13px;
+  overflow: hidden;
+  float: left; }
+  span.float-left span {
+    margin: 13px 0 0; }
+span.float-right {
+  display: block;
+  margin-left: 13px;
+  overflow: hidden;
+  float: right; }
+  span.float-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: right; }
+
+code, tt {
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px; }
+
+pre code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent; }
+
+.highlight pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+  pre code, pre tt {
+    background-color: transparent;
+    border: none; }
+
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+
+kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font-size: 11px;
+  line-height: 10px;
+  color: #555;
+  vertical-align: middle;
+  background-color: #fcfcfc;
+  border: solid 1px #ccc;
+  border-bottom-color: #bbb;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #bbb
+}
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+
+
+</head>
+
+<body>
+
+<h1 id="toc_0">Cheatsheet: skimage and related functions</h1>
+
+<h2 id="toc_1">NumPy</h2>
+
+<div><pre><code class="language-python">import numpy as np</code></pre></div>
+
+<p><strong>Basic array operations</strong></p>
+
+<div><pre><code class="language-python">A = np.random.random([h,w])     # (h,w) array with random values in [0,1]
+A = np.zeros((h,w))             # (h,w) array of zeroes
+A = np.ones((h,w))              # (h,w) array of ones
+A = np.array([[1,2,3],[4,5,6]]) # (2,3) array with custom values
+A = B.copy()                    # Duplicate data structure
+A+B, A-B, A*B, A/B, A**B        # Element-wise operations</code></pre></div>
+
+<div><pre><code class="language-python">A.dtype   # Data type (uint8, float...)
+A.shape   # (w,h,...)
+A.size    # total number of elements</code></pre></div>
+
+<p><strong>Slicing</strong></p>
+
+<div><pre><code class="language-python">A[y,x,:]  or A[y,x,...]       # Pixel (x,y)
+A[y,:,:]                      # Row y
+A[:,x,:]                      # Column x
+A[:,:,c]  or  A[...,c]        # Channel c
+A[y1:y2,x1:x2,:]  # Rectangle [x1,x2)*[y1,y2) (x2 and y2 are excluded)
+A[1:-1,1:-1,:]    # Crop: Remove 1 pixel margin around the image
+A[::2,::2,:]      # Subsample: keep only pixels with a step of 2</code></pre></div>
+
+<p><strong>Thresholding and boolean operations</strong></p>
+
+<div><pre><code class="language-python">mask = A[...,0]&gt;50                      # Array of booleans, one dim less than A
+mask = (A[...,0]&gt;50) &amp; (A[...,0]&lt;80))   # and (Don&#39;t forget the parentheses !)
+mask = (A[...,0]&gt;50) | (A[...,1]&lt;30))   # or
+mask = ~mask1                           # not
+mask = mask1 ^ mask2                    # xor</code></pre></div>
+
+<p>Assignment, with broadcasting:</p>
+
+<div><pre><code class="language-python">A[...]=B                           # Copy values into preexisting array
+A[10:60, 10:210, :] = [255, 0, 0]  # Vector gets replicated automatically
+A[mask, :] = [255, 0, 0]  # Assign to each pixel A[i,j,:] where mask[i,j]==True
+A[mask, :] = B[mask, :]   # Copy pixel values from B where mask[i,j]==True</code></pre></div>
+
+<p><strong>Reorganizing arrays</strong></p>
+
+<p>We assume <code>A.shape==(h,w,3)</code></p>
+
+<div><pre><code class="language-python">B=A.transpose([2,0,1])   # Permute dims to (3,w,h)
+B=A.reshape((h*w,3))     # Reorganize items into new shape
+B=A.ravel()              # Reshape to a flat 1D array</code></pre></div>
+
+<h2 id="toc_2">Plotting</h2>
+
+<div><pre><code class="language-python">import matplotlib.pyplot as plt</code></pre></div>
+
+<p><strong>Layout</strong></p>
+
+<div><pre><code class="language-python">fig = plt.figure() 
+fig = plt.figure(figsize=(5,3)) # New figure ((w,h) size in inches)
+
+fig, axes = plt.subplots(1,3)   # New figure with row of 3 subplots
+axes[i].plot(...)               # Draw in subplot #i
+
+fig, axes = plt.subplots(3,4)   # 3x4 matrix of subplots
+axes[i,j].plot(...)             # Draw in subplot (i,j)
+# or
+axes=axes.ravel()               # Flatten the axes array to have simpler index
+axes[k].plot(...)</code></pre></div>
+
+<p><strong>Basic plots</strong></p>
+
+<div><pre><code class="language-python">plt.plot(xs, ys, &#39;.-&#39;)        # plot curve (xs[i],ys[i])</code></pre></div>
+
+<div><pre><code class="language-python">plt.imshow(A, cmap=&#39;viridis&#39;)      # Graylevel image with colormap
+plt.imshow(A, vmin=a, vmax=b)      # Set explicitly min and max values
+
+skdemo.imshow_all(A, B, C)         # Draw 3 images side by side
+skdemo.imshow_all(A, B, C, limits=&#39;auto&#39;)  # Each image gets its own limits
+plt.tight_layout()  # Fix overlapping axes</code></pre></div>
+
+<div><pre><code class="language-python">H,bin_edges,_ = plt.hist(A.ravel(), 100)      # Histogram of values, 100 bins
+
+H,bin_edges = np.histogram(A.ravel(), 100)
+plt.bar(bin_edges[:-1], H, width=1, align=&#39;edge&#39;)
+
+from skimage import exposure
+H, bin_centers = exposure.histogram(image)    # If `int`, bins = 0..255
+plt.plot(bin_centers, H)
+plt.bar(bin_centers, H, width=1)</code></pre></div>
+
+<p><strong>Colorbars</strong></p>
+
+<div><pre><code class="language-python"># Official way to add colorbar:
+imhandle = plt.imshow(A)            # Need to get the handle to the drawn image
+plt.colorbar(imhandle, ax=axes[1])  # Use imhandle colormap for axes[1] colorbar
+
+# Simplified form from skdemo (use some tricks internally):
+skdemo.colorbars()                   # Add colorbars to all axes in current figure
+skdemo.colorbars(axes[1])            # Add colorbar to axes[1]
+skdemo.colorbars([axes[0],axes[2]])  # Add colorbars to axes[0] and axes[2] only</code></pre></div>
+
+<p><strong>Access plot elements properties</strong></p>
+
+<div><pre><code class="language-python"># Tricks to change plot elements after plotting:
+
+# All elements follow a hierarchy: figure -&gt; axes -&gt; images
+ax = fig.axes[i]                     # Axes #i in figure `fig`
+imhandle = ax.images[0]              # First image in axes `ax`
+ax = imhandle.axes                   # Axes in which imhandle is drawn
+
+# Current figure/axes/image
+fig = plt.gcf();    axes = plt.gca();    imhandle = plt.gci();   # Get
+plt.scf(fig);       plt.sca(ax);         plt.sci(imhandle);      # Set</code></pre></div>
+
+<div><pre><code class="language-python"># Current figure properties
+plt.suptitle(&#39;Figure title&#39;)
+
+# Current axes properties
+plt.title(&#39;Axes title&#39;)
+plt.xlabel(&#39;X axis name&#39;); plt.ylabel(&#39;Y axis name&#39;)
+plt.xticks([]); plt.yticks([])       # Remove ticks from current axes
+plt.xticks(A.shape[1]); plt.yticks(A.shape[0])  # Force integer ticks
+
+# Current image properties
+plt.cmap(&#39;viridis&#39;)         # Change colormap
+plt.clim(0,1)               # Force min/max values</code></pre></div>
+
+<p>Note: Most properties can also be accessed with object oriented API instead. For instance: <code>ax.set_label(&#39;X axis name&#39;)</code> or <code>imhandle.set_cmap(&#39;viridis&#39;)</code></p>
+
+<h3 id="toc_3">Image manipulation</h3>
+
+<div><pre><code class="language-python">from skimage import data, io, color, exposure, filters, \
+                    transform, morphology, measure
+from scipy import ndimage as ndi</code></pre></div>
+
+<p><strong>I/O, Data types</strong></p>
+
+<div><pre><code class="language-python">from skimage import data, io
+image = data.chelsea()
+balloon = io.imread(&#39;../images/balloon.jpg&#39;)
+
+from skimage import img_as_float, img_as_ubyte
+image_float = img_as_float(image)     # Automatically convert [0..255] to [0,1]
+image_ubyte = img_as_ubyte(image)     # Automatically convert [0,1] to [0..255]
+image_float = image.astype(np.float)  # Keep same values but change dtype
+image.dtype, image.min(), image.max() # Data type and value range
+
+from skimage import transform
+scaled  = transform.rescale(image, 0.25)    # Scale factor
+resized = transform.resize(image, (100,80)) # Resize to given shape</code></pre></div>
+
+<p><strong>Simple processing</strong></p>
+
+<div><pre><code class="language-python">image+10, image-10                  # Brighten, Darken
+image*1.3, (image-128)*1.3+128      # Increase contrast (keep 0 or 128 invariant)
+high_contrast=(image-a)/(b-a)*255   # Maps [a,b] to [0,255]
+
+from skimage import exposure
+high_contrast = exposure.rescale_intensity(image, 
+                     in_range=(a,b), out_range=(0,255))</code></pre></div>
+
+<p><strong>Color conversion</strong></p>
+
+<div><pre><code class="language-python">from skimage import color
+gray = color.rgb2gray(balloon)
+lab  = color.rgb2lab(balloon)
+hsv  = color.rgb2hsv(balloon)</code></pre></div>
+
+<p><strong>Filtering</strong></p>
+
+<div><pre><code class="language-python">image = img_as_float(image)    # Make sure images are float before processing
+
+from scipy import ndimage as ndi
+filtered = ndi.convolve(image, mean_kernel) # 2d convolution, generic kernel
+
+from skimage import filters
+smooth = filters.gaussian(image, sigma) # 2d convolution, gaussian
+gradient_magnitude = filters.sobel(image)
+gradient_magnitude = filters.sobel(image, )
+
+from skimage import morphology
+selem = morphology.disk(1)  # &quot;structuring element&quot;
+median  = filters.rank.median(pixelated, selem)
+eroded  = morphology.erosion(image, selem)
+dilated = morphology.dilation(image, selem)
+opened  = morphology.opening(image, selem)
+closed  = morphology.closing(image, selem)</code></pre></div>
+
+<p><strong>Analysis</strong></p>
+
+<div><pre><code class="language-python">from scipy import ndimage as ndi
+label_image, count = ndi.label(mask)
+
+from skimage import measure
+props = measure.regionprops(label_image)
+centroids = np.array( [prop.centroid for prop in props] )
+areas     = np.array( [prop.area for prop in props] )
+</code></pre></div>
+
+
+
+
+</body>
+
+</html>
