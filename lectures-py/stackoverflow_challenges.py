@@ -3,12 +3,10 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
 %matplotlib inline   
-
 
 
 # <codecell>
@@ -38,7 +36,6 @@ from skimage import (filter as filters, io, color,
 # 1. Binarize and skeletonize (``morphology.skeletonize``)
 # 2. Locate corners via convolution (``scipy.signal.convolve2d``)
 # 3. Find intersections between corners and snakes (``np.logical_and``)
-
 
 
 # <codecell>
@@ -89,7 +86,6 @@ plt.show()
 # 3. Fit the ``CircleModel`` using ``measure.ransac``.
 
 
-
 # <codecell>
 
 image = io.imread("../images/round_pill.jpg")
@@ -100,7 +96,6 @@ f, (ax0, ax1, ax2) = plt.subplots(1, 3, figsize=(15, 8))
 ax0.imshow(image)
 ax1.imshow(image_equalized)
 ax2.imshow(edges, cmap='gray');   
-
 
 
 # <codecell>
@@ -146,7 +141,6 @@ ax.add_artist(circle);
 # 4. Try edge detection (``filters.canny``)
 
 
-
 # <codecell>
 
 from skimage import restoration, color, io, filter as filters, morphology
@@ -186,12 +180,10 @@ for ax in axes:
 # 6. Visualize (potentially using ``color.label2rgb``)
 
 
-
 # <codecell>
 
 from skimage import data
 plt.imshow(data.coins(), cmap='gray');   
-
 
 
 # <codecell>
@@ -208,7 +200,6 @@ edges = morphology.closing(edges, morphology.square(3))
 f, (ax0, ax1) = plt.subplots(1, 2)
 ax0.imshow(image, cmap='gray')
 ax1.imshow(edges, cmap='gray');   
-
 
 
 # <codecell>
@@ -239,7 +230,6 @@ plt.imshow(out);
 # Consider the color wheel (``../images/color-wheel.jpg``) or the balloon
 # (``../images/balloon.jpg``). Isolate all the blue-ish colors in the top
 # quadrant.
-
 
 
 # <codecell>
@@ -294,7 +284,6 @@ plt.show()
 #    is your region property) to plot its orientation
 
 
-
 # <codecell>
 
 image = io.imread("../images/hand-coin.jpg")
@@ -340,14 +329,7 @@ plt.show()
 # <div style="height: 400px;"></div>
 
 
-
 # <codecell>
 
 %reload_ext load_style
 %load_style ../themes/tutorial.css   
-
-
-
-# <codecell>
-
-   

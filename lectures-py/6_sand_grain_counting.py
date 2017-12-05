@@ -18,7 +18,6 @@
 # ### Loading the slide
 
 
-
 # <codecell>
 
 %matplotlib inline
@@ -28,7 +27,6 @@ import matplotlib
 matplotlib.rcParams['image.interpolation'] = 'nearest'
 matplotlib.rcParams['image.cmap'] = 'viridis'
 matplotlib.rcParams['figure.figsize'] = (10, 7)   
-
 
 
 # <codecell>
@@ -45,7 +43,6 @@ plt.imshow(img, cmap=plt.cm.gray, interpolation='nearest');
 # ### Remove banner
 
 
-
 # <codecell>
 
 img_clean = img[:880, :]
@@ -56,11 +53,14 @@ plt.imshow(img_clean, cmap=plt.cm.gray, interpolation='nearest');
 # ### Filter to get rid of speckles
 
 
-
 # <codecell>
 
-import scipy.ndimage as ndi
-img_med = ndi.median_filter(img_clean, size=5)
+#import scipy.ndimage as ndi
+from skimage.filters import median
+from skimage.morphology import rectangle
+
+#img_med = ndi.median_filter(img_clean, size=5)
+img_med = median(img_clean, rectangle(5,5))
 plt.imshow(img_med, cmap=plt.cm.gray, interpolation='nearest');   
 
 
@@ -68,15 +68,14 @@ plt.imshow(img_med, cmap=plt.cm.gray, interpolation='nearest');
 # ### Find threshold values
 
 
-
 # <codecell>
 
+plt.figure(figsize=(8,3))
 plt.hist(img_med.flatten(), bins=40, range=(0, 150));   
 
 
 # <markdowncell>
 # ### Separate layers by thresholding
-
 
 
 # <codecell>
@@ -104,7 +103,6 @@ plot_images();
 # ### Visualise layers
 
 
-
 # <codecell>
 
 def plot_color_overlay():
@@ -128,12 +126,15 @@ plot_color_overlay()
 # ### Clean up shapes found
 
 
-
 # <codecell>
 
+from skimage.morphology import opening, closing
+
 for img in (sand, bubbles, glass):
-    img[:] = ndi.binary_opening(img, np.ones((5, 5)))
-    img[:] = ndi.binary_closing(img, np.ones((5, 5)))
+    #img[:] = ndi.binary_opening(img, np.ones((5, 5)))
+    #img[:] = ndi.binary_closing(img, np.ones((5, 5)))
+    img[:] = opening(img, np.ones((5, 5)))
+    img[:] = closing(img, np.ones((5, 5)))
     
 plot_images()   
 
@@ -142,23 +143,43 @@ plot_images()
 # ### Label connected components
 
 
-
 # <codecell>
+
+from skimage.measure import label
 
 # Convert to int so we can store the labels
 bubbles = bubbles.astype(int)
 sand = sand.astype(int)
 glass = glass.astype(int)
 
+obj_areas={}
+
 for name, img in [('Sand', sand),
                   ('Bubbles', bubbles),
                   ('Glass', glass)]:
-    labels, count = ndi.label(img)
+    #labels, count = ndi.label(img) # Scipy
+    labels, count = label(img, return_num=True) # skimage
     print('%s regions found in %s' % (count, name))
     img[:] = labels
     
-    obj_areas = [np.sum(labels == i) for \
+    obj_areas[name] = [np.sum(labels == i) for \
                  i in range(1, labels.max())]
-    print("Mean obj area %d" % np.mean(obj_areas))
+    print("Mean obj area %d" % np.mean(obj_areas[name]))
 
 plot_images(cmap=plt.cm.spectral)   
+
+
+# <codecell>
+
+count,bins=np.histogram(np.sqrt(obj_areas['Bubbles']), 10)
+#bins=(bins[0:-1]+bins[1:])/2
+#plt.bar#
+
+plt.figure(figsize=(6,3))
+plt.bar(bins[0:-1],count,width=bins[1:]-bins[0:-1], align='edge')
+plt.xlabel('size')
+plt.ylabel('count')
+plt.title('Bubbles')
+
+#df=pd.DataFrame(data={'est_size':bins.T,'count':count.T},columns=['est_size','count'])
+#df   

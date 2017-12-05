@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 %matplotlib inline   
@@ -38,7 +37,6 @@
 # interpolation, as discussed in the previous section.
 
 
-
 # <codecell>
 
 import matplotlib.pyplot as plt
@@ -57,7 +55,6 @@ plt.rcParams['image.interpolation'] = 'none'
 # Let's go to back to basics and look at a 1D step-signal
 
 
-
 # <codecell>
 
 step_signal = np.zeros(100)
@@ -70,7 +67,6 @@ ax.margins(0.1)
 # <markdowncell>
 # <notes>
 # Now add some noise to this signal:
-
 
 
 # <codecell>
@@ -87,7 +83,6 @@ ax.margins(0.1)
 # signal is to take the average between neighboring "pixels":
 
 
-
 # <codecell>
 
 # Take the mean of neighboring pixels
@@ -101,7 +96,6 @@ ax.margins(0.1)
 # <notes>
 # This same concept, nearest-neighbor averages, can be expressed as a
 # convolution with an averaging kernel:
-
 
 
 # <codecell>
@@ -126,7 +120,6 @@ ax.margins(0.1)
 # image:
 
 
-
 # <codecell>
 
 import numpy as np
@@ -140,7 +133,6 @@ bright_square[2:5, 2:5] = 1
 # This gives the values below:
 
 
-
 # <codecell>
 
 print(bright_square)   
@@ -149,7 +141,6 @@ print(bright_square)
 # <markdowncell>
 # <notes>
 # and looks like a white square centered on a black square:
-
 
 
 # <codecell>
@@ -169,7 +160,6 @@ ax.imshow(bright_square);
 # which we'll call a "mean kernel". For each pixel, a kernel defines which
 # neighboring pixels to consider when filtering, and how much to weight those
 # pixels.
-
 
 
 # <codecell>
@@ -203,7 +193,6 @@ print(mean_kernel)
 # Let's take a look at the numerical result:
 
 
-
 # <codecell>
 
 from scipy.ndimage import convolve
@@ -230,7 +219,6 @@ print(convolve(bright_square, mean_kernel))
 
 # <markdowncell>
 # Let's see a convolution in action:
-
 
 
 # <codecell>
@@ -306,16 +294,14 @@ def bounded_slice(center, xy_max, size=1, i_min=0):
    
 
 
-
 # <codecell>
 
-mean_filter_interactive_demo(bright_square)   
+mean_filter_interactive_demo(img_as_float(pixelated))   
 
 
 # <markdowncell>
 # <notes>
 # Slight aside:
-
 
 
 # <codecell>
@@ -342,7 +328,6 @@ print(np.sum(mean_kernel))
 # using the "step" argument to sub-sample it:
 
 
-
 # <codecell>
 
 from skimage import data
@@ -363,7 +348,6 @@ ax1.imshow(pixelated)
 # <markdowncell>
 # We are actually going to be using the pattern of plotting multiple images side
 # by side quite often, so we are going to make the following helper function:
-
 
 
 # <codecell>
@@ -396,7 +380,6 @@ def imshow_all(*images, titles=None):
 # <markdowncell>
 # <notes>
 # Now we can apply the filter to this downsampled image:
-
 
 
 # <codecell>
@@ -439,7 +422,6 @@ imshow_all(pixelated, filtered)
 # to the center are weighted more than those farther away.
 
 
-
 # <codecell>
 
 # Rename module so we don't shadow the builtin function
@@ -460,7 +442,6 @@ imshow_all(bright_square, smooth_mean, smooth,
 # For a real image, we get the following:
 
 
-
 # <codecell>
 
 from skimage import img_as_float
@@ -477,7 +458,6 @@ imshow_all(pixelated_float, smooth)
 # filter is typically preferred because of the distance-dependent weighting. For
 # a more detailed image and a larger filter, you can see artifacts in the mean
 # filter since it doesn't take distance into account:
-
 
 
 # <codecell>
@@ -519,7 +499,6 @@ imshow_all(smooth_mean, smooth_gaussian, titles=titles)
 # Let's first consider a 1D edge, using the step signal from before:
 
 
-
 # <codecell>
 
 fig, ax = plt.subplots()
@@ -533,11 +512,9 @@ ax.margins(0.1)
 # Here, we'll use convolution or cross-correlation to do just that:
 
 
-
 # <codecell>
 
 change = ndi.convolve(step_signal, np.array([1, 0, -1]))   
-
 
 
 # <codecell>
@@ -562,7 +539,6 @@ ax.margins(0.1)
 # What if we try the same trick with our noisy signal?
 
 
-
 # <codecell>
 
 noisy_change = ndi.convolve(noisy_signal, np.array([1, 0, -1]))
@@ -580,7 +556,6 @@ ax.margins(0.1)
 # the mean:
 
 
-
 # <codecell>
 
 mean_diff = ndi.convolve([0., 0, 1, 0, -1, 0, 0], [1/3, 1/3, 1/3])
@@ -589,7 +564,6 @@ print(mean_diff)
 
 # <markdowncell>
 # Now we can use this to find our edge even in a noisy signal:
-
 
 
 # <codecell>
@@ -614,7 +588,6 @@ ax.margins(0.1)
 # neighbor from the other.
 
 
-
 # <codecell>
 
 vertical_gradient = pixelated[2:, :] - pixelated[:-2, :]
@@ -628,7 +601,6 @@ horizontal_gradient = pixelated[:, 2:] - pixelated[:, :-2]
 # because you'll be developing the filtering kernel in an exercise soon enough.
 
 
-
 # <codecell>
 
 imshow_all(pixelated, vertical_gradient, horizontal_gradient)   
@@ -640,15 +612,8 @@ imshow_all(pixelated, vertical_gradient, horizontal_gradient)
 # wrong here?
 
 
-
-# <codecell>
-
-   
-
-
 # <markdowncell>
 # There's another issue with this approach, more obvious on a smaller image:
-
 
 
 # <codecell>
@@ -658,11 +623,9 @@ horizontal_gradient = bright_square[:, 2:] - bright_square[:, :-2]
 imshow_all(bright_square, vertical_gradient, horizontal_gradient)   
 
 
-
 # <codecell>
 
 print(bright_square.shape, horizontal_gradient.shape)   
-
 
 
 # <codecell>
@@ -672,7 +635,7 @@ ndi.convolve?
 
 # <markdowncell>
 # <fragment>
-# ### Exercise: edge detection
+# ### <span style="color:cornflowerblue">Exercise:</span>
 
 
 # <markdowncell>
@@ -686,7 +649,6 @@ ndi.convolve?
 # <markdowncell>
 # <notes>
 # This should get you started:
-
 
 
 # <codecell>
@@ -735,7 +697,6 @@ imshow_all(horizontal_gradient, vertical_gradient)
 # such that the direction of the gradient is ignored.
 
 
-
 # <codecell>
 
 imshow_all(bright_square, filters.sobel(bright_square))   
@@ -747,9 +708,16 @@ imshow_all(bright_square, filters.sobel(bright_square))
 # preferentially shifted to a corner of the image. Furthermore, the weights used
 # in the Sobel filter produce diagonal edges with reponses that are comparable
 # to horizontal or vertical edges.
-# 
-# Like any derivative, noise can have a strong impact on the result:
 
+
+# <codecell>
+
+imshow_all(bright_square, filters.sobel_h(bright_square), filters.sobel_v(bright_square))   
+
+
+# <markdowncell>
+# <notes>
+# Like any derivative, noise can have a strong impact on the result:
 
 
 # <codecell>
@@ -763,7 +731,6 @@ imshow_all(pixelated, pixelated_gradient)
 # Smoothing is often used as a preprocessing step in preparation for feature
 # detection and image-enhancement operations because sharp features can distort
 # results.
-
 
 
 # <codecell>
@@ -817,7 +784,6 @@ imshow_all(pixelated_gradient, gradient*1.8, titles=titles)
 # end up with edges that are smoothed.
 
 
-
 # <codecell>
 
 from skimage.morphology import disk
@@ -830,7 +796,6 @@ imshow_all(pixelated, smooth, median, titles=titles)
 # <markdowncell>
 # <notes>
 # This difference is more noticeable with a more detailed image.
-
 
 
 # <codecell>
@@ -858,10 +823,10 @@ imshow_all(coins, mean_coin, median_coin, titles=titles)
 # `scikit-image` also provides more sophisticated denoising filters:
 
 
-
 # <codecell>
 
 from skimage.restoration import denoise_tv_bregman
+import skdemo
 denoised = denoise_tv_bregman(image, 4)
 d = disk(4)
 median = filters.rank.median(image, d)
@@ -883,14 +848,7 @@ skdemo.imshow_all(image, median, denoised, titles=titles)
 # <div style="height: 400px;"></div>
 
 
-
 # <codecell>
 
 %reload_ext load_style
 %load_style ../themes/tutorial.css   
-
-
-
-# <codecell>
-
-   

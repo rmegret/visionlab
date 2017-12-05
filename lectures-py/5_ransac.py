@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 %matplotlib inline
@@ -26,7 +25,6 @@ matplotlib.rcParams['image.interpolation'] = 'nearest'
 # image.org/docs/dev/auto_examples/plot_matching.html)
 
 
-
 # <codecell>
 
 import numpy as np
@@ -37,7 +35,6 @@ from skimage.measure import ransac
 
 # <markdowncell>
 # Let's set up some random data points:
-
 
 
 # <codecell>
@@ -80,7 +77,6 @@ plt.plot(data[:, 0], data[:, 1], 'b.');
 # Since we have an over-determined system, we use least squares to solve:
 
 
-
 # <codecell>
 
 x = data[:, 0]
@@ -96,7 +92,6 @@ p
 # With those parameters in hand, let's plot the resulting line:
 
 
-
 # <codecell>
 
 m, c = p
@@ -109,7 +104,6 @@ plt.plot(xx, m * xx + c, 'r-');
 # <markdowncell>
 # Scikit-image provides an N-dimensional LineModel object that encapsulates the
 # above:
-
 
 
 # <codecell>
@@ -127,7 +121,6 @@ model.params
 # e.g.!
 
 
-
 # <codecell>
 
 origin, direction = model.params
@@ -138,7 +131,6 @@ plt.plot(xx, model.predict_y(xx), 'r-');
 # <markdowncell>
 # Now, we robustly fit the line using inlier data selecte with the RANSAC
 # algorithm:
-
 
 
 # <codecell>
@@ -182,7 +174,6 @@ plt.show()
 # Let's start by loading an example image:
 
 
-
 # <codecell>
 
 from skimage import io
@@ -197,7 +188,6 @@ ax.imshow(image);
 # In this specific image, we got a bit more than we bargained for in the
 # form of magnificently large solar flares.  Let's see if some *canny
 # edge detection* will help isolate the sun's boundaries.
-
 
 
 # <codecell>
@@ -220,7 +210,6 @@ ax.imshow(my_result, cmap='gray')
 # use RANSAC to fit a robust circle model.
 
 
-
 # <codecell>
 
 from skimage.measure import CircleModel
@@ -234,7 +223,6 @@ model_robust, inliers = ransac(...)
 # The parameters of the circle are center x, y and radius:
 
 
-
 # <codecell>
 
 model_robust.params   
@@ -243,7 +231,6 @@ model_robust.params
 # <markdowncell>
 # Let's visualize the results, drawing a circle on the sun, and also
 # highlighting inlier vs outlier edge pixels:
-
 
 
 # <codecell>
@@ -280,7 +267,6 @@ ax0.add_patch(circle);
 #    prominent edge of the card
 # 3. Remove the edge points belonging to the most prominent edge, and
 #    repeat the process to find the second, third, and fourth
-
 
 
 # <codecell>

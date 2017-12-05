@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -21,7 +20,6 @@ from __future__ import division, print_function
 # # Panorama stitching
 
 
-
 # <codecell>
 
 import numpy as np
@@ -29,7 +27,6 @@ import matplotlib.pyplot as plt
 from skimage import io, transform
 from skimage.color import rgb2gray
 from skdemo import imshow_all   
-
 
 
 # <codecell>
@@ -43,7 +40,6 @@ ic = io.ImageCollection('../images/pano/DFM_*')
 # read from disk until accessed.
 
 
-
 # <codecell>
 
 imshow_all(ic[0], ic[1])   
@@ -54,7 +50,6 @@ imshow_all(ic[0], ic[1])
 # License: CC-BY
 
 
-
 # <codecell>
 
 image0 = rgb2gray(ic[0][:, 500:500+1987, :])
@@ -62,7 +57,6 @@ image1 = rgb2gray(ic[1][:, 500:500+1987, :])
 
 image0 = transform.rescale(image0, 0.25)
 image1 = transform.rescale(image1, 0.25)   
-
 
 
 # <codecell>
@@ -85,7 +79,6 @@ imshow_all(image0, image1)
 # "Oriented FAST and rotated BRIEF" features are detected in both images:
 
 
-
 # <codecell>
 
 from skimage.feature import ORB, match_descriptors
@@ -101,7 +94,6 @@ keypoints2 = orb.keypoints
 descriptors2 = orb.descriptors
 
 matches12 = match_descriptors(descriptors1, descriptors2, cross_check=True)   
-
 
 
 # <codecell>
@@ -128,7 +120,6 @@ ax.axis('off');
 # model which corresponds best with the majority of matches.
 
 
-
 # <codecell>
 
 from skimage.transform import ProjectiveTransform
@@ -142,7 +133,6 @@ dst = keypoints1[matches12[:, 0]][:, ::-1]
 
 model_robust, inliers = ransac((src, dst), ProjectiveTransform,
                                min_samples=4, residual_threshold=2)   
-
 
 
 # <codecell>
@@ -162,7 +152,6 @@ ax.axis('off');
 # Next, we want to produce the panorama itself.  The first
 # step is to find the shape of the output image, by taking
 # considering the extents of all warped images.
-
 
 
 # <codecell>
@@ -202,7 +191,6 @@ output_shape = np.ceil(output_shape[::-1])
 # as an input.
 
 
-
 # <codecell>
 
 from skimage.color import gray2rgb
@@ -221,7 +209,6 @@ image1_ = warp(image1, (model_robust + offset).inverse,
 # <markdowncell>
 # An alpha channel is now added to the warped images
 # before they are merged together:
-
 
 
 # <codecell>
@@ -244,7 +231,6 @@ alpha = merged[..., 3]
 # number of images to get an average.
 merged /= np.maximum(alpha, 1)[..., np.newaxis]
 merged = merged[..., :3]   
-
 
 
 # <codecell>
@@ -274,12 +260,10 @@ imshow_all(image0_alpha, image1_alpha, merged)
 # Communications, April 1983.
 
 
-
 # <codecell>
 
 plt.imsave('/tmp/frame0.tif', image0_alpha)
 plt.imsave('/tmp/frame1.tif', image1_alpha)   
-
 
 
 # <codecell>
@@ -287,7 +271,6 @@ plt.imsave('/tmp/frame1.tif', image1_alpha)
 %%bash
 
 enblend /tmp/frame*.tif -o /tmp/pano.tif   
-
 
 
 # <codecell>
@@ -303,7 +286,6 @@ plt.axis('off');
 # ---
 # 
 # <div style="height: 400px;"></div>
-
 
 
 # <codecell>

@@ -3,27 +3,14 @@
 
 
 
-
-# <codecell>
-
-from __future__ import division, print_function
-%matplotlib inline
-import matplotlib
-matplotlib.rcParams['image.interpolation'] = 'nearest'
-import numpy as np
-import matplotlib.pyplot as plt   
-
-
 # <markdowncell>
-# # Image processing and machine learning
+# <slide>
+# # Machine learning for image processing
 # 
-# Some image processing numerical techniques are very specific to image
-# processing, such as mathematical morphology or anisotropic diffusion
-# segmentation. However, it is also possible to adapt generic machine learning
-# techniques for image processing.
 
 
 # <markdowncell>
+# <subslide>
 # ## A short introduction to machine learning
 # 
 # This section is adapted from the [quick start tutorial](http://scikit-
@@ -41,10 +28,10 @@ import matplotlib.pyplot as plt
 # For example, given examples of pixels belonging to an object of interest and
 # background, we want the algorithm to label all the other pixels of the image.
 # Or given images of cats and dogs, we want to label automatically images
-# whether they show cats or dogs.
+# whether they show cats or dogs. (_This notebook_)
 # - **clustering**: grouping together similar samples. For example, given a set
 # of pictures, can we group them automatically by suject (e.g. people,
-# monuments, animals...)?
+# monuments, animals...)?  (_See [clustering.ipynb](clustering.ipynb)_)
 # 
 # In image processing, a sample can either be
 # - a whole image, its features being pixel values, or sub-regions of an image
@@ -56,34 +43,70 @@ import matplotlib.pyplot as plt
 # The only requirement is to create a dataset composed of N samples, of m
 # features each, which can be passed to the **estimators** of scikit-learn.
 # 
-# Let us start with an example, using the **digits dataset** from scikit-learn.
-
+# **Outline**
+# 
+# 1. Image classification: recognizing images digits
+# 2. Image segmentation by classifying pixels: recognizing color and texture
+#     - Learning color segmentation
+#     - Using additional features, scale-space
+#     - Texture segmentation using Gabor features
 
 
 # <codecell>
 
-from sklearn import datasets   
+# IMPORTS
 
+%load_ext autoreload
+%autoreload 2
 
-
-# <codecell>
-
-digits = datasets.load_digits()
-print(digits)   
+from __future__ import division, print_function
+%matplotlib inline
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams['image.interpolation'] = 'nearest'
+matplotlib.rcParams['figure.figsize'] = (8,3)
+from skimage import io, color
+import skdemo
+from skdemo import show_segmentation, discrete_colorbar, show_features   
 
 
 # <markdowncell>
+# <slide>
+# ### Supervised image classification: Digits dataset
+
+
+# <markdowncell>
+# Let us start with an example, using the **digits dataset** from scikit-learn.
+
+
+# <codecell>
+
+from sklearn import datasets
+digits = datasets.load_digits()   
+
+
+# <codecell>
+
+print(type(digits))
+print(dict.keys(digits))
+print(digits.DESCR)   
+
+
+# <markdowncell>
+# <subslide>
 # The dataset is a dictionary-like object that holds all the data and some
 # metadata about the data. This data is stored in the ``.data`` member, which is
 # a ``n_samples, n_features`` array. Response variables (if available, as here)
 # are stored in the ``.target member.``
 
 
-
 # <codecell>
 
 print(digits.data.shape)
-print(digits.target.shape)   
+print(digits.target.shape)
+print(digits.images.shape)
+print(digits.target[0:20])   
 
 
 # <markdowncell>
@@ -94,21 +117,21 @@ print(digits.target.shape)
 # array** of features, which sometimes require reshaping data.
 
 
-
 # <codecell>
 
 print(digits.images.shape)
 np.all(digits.data[0].reshape((8, 8)) == digits.images[0])   
 
 
-
 # <codecell>
 
-plt.imshow(digits.images[0], cmap='gray')
-print("target: ", digits.target[0])   
+i = 13
+plt.imshow(digits.images[i], cmap='gray')
+print("id: ", i,", target: ", digits.target[i])   
 
 
 # <markdowncell>
+# <subslide>
 # We now use one of scikit-learn's estimators classes in order to predict the
 # digit from an image.
 # 
@@ -119,7 +142,6 @@ print("target: ", digits.target[0])
 # learn. An estimator is created by initializing an estimator object:
 
 
-
 # <codecell>
 
 from sklearn import svm
@@ -127,30 +149,117 @@ clf = svm.SVC(gamma=0.001, C=100.)
 
 
 # <markdowncell>
-# The estimator is trained from the learning set using its ``.fit`` method.
-
+# <subslide>
+# The estimator is trained from the learning set using its ``.fit`` method. We
+# train on the first half of the dataset.
 
 
 # <codecell>
 
-clf.fit(digits.data[:-10], digits.target[:-10])   
+train_ids=np.arange(0,1797//2)   # Use first half for training
+test_ids=np.arange(1797//2,1797) # Use second half for testing
+clf.fit(digits.data[train_ids], digits.target[train_ids])   
 
 
 # <markdowncell>
+# <subslide>
 # Then the target value of new data is predicted using the ``.predict`` method
-# of the estimator.
-
+# of the estimator. We predict within the second half of the dataset to avoid
+# predicting on the data used for training.
 
 
 # <codecell>
 
-print(clf.predict(digits.data[-2:]))
-fig, axes = plt.subplots(1, 2)
-axes[0].imshow(digits.images[-2], cmap='gray')
-axes[1].imshow(digits.images[-1], cmap='gray')   
+print(clf.predict(digits.data[-3:]))
+fig, axes = plt.subplots(1, 3)
+axes[0].imshow(digits.images[-3], cmap='gray')
+axes[1].imshow(digits.images[-2], cmap='gray')
+axes[2].imshow(digits.images[-1], cmap='gray')   
 
 
 # <markdowncell>
+# <subslide>
+# Compute the overall performance by predicting over all the testing samples
+
+
+# <codecell>
+
+prediction = clf.predict(digits.data) # predict on everything
+correct = sum(prediction[test_ids]==digits.target[test_ids]) # But compute perf on test only
+tot  = test_ids.size
+accuracy=correct/tot
+print('accuracy = {:.3} (correct={}/tot={})'.format(accuracy, correct,tot))   
+
+
+# <codecell>
+
+from ipywidgets import IntSlider, interact
+@interact(N=IntSlider(min=0,max=digits.target.size-1,value=0))
+def display_prediction(N=0):
+    target=digits.target
+    nb=target.size
+    i=N#idsW[N]
+    fig, axes = plt.subplots(1,2,figsize=(12,3))
+    plt.sca(axes[0])
+    plt.imshow(digits.images[i], cmap='gray')
+    if (prediction[i]==target[i]):
+        col='green'
+    else:
+        col='red'
+    plt.title("#{}:\n{}/{}".format(i,prediction[i],digits.target[i]), color=col)
+    plt.xticks([]);  plt.yticks([])
+    plt.sca(axes[1])
+    delta=100
+    r0=max(0,i-delta)
+    r1=r0+delta*2
+    r=range(r0,r1+1)
+    plt.plot([i,i],[-0.5,9.5],'y')
+    plt.plot(r,target[r],'ob')
+    plt.plot(r,prediction[r],'.r')
+    plt.xlim(r0-0.5,r1+0.5); plt.xlabel('sample #')
+    plt.ylim(-0.5,9.5); plt.ylabel('label')   
+
+
+# <markdowncell>
+# <subslide>
+# Let's display all incorrect predictions and some corretc ones
+
+
+# <codecell>
+
+id0=1000
+ids=range(id0,id0+100)
+
+#ids=test_ids[np.nonzero(prediction[test_ids]!=digits.target[test_ids])]
+#ids=np.array(np.nonzero(prediction!=digits.target))
+#(prediction==digits.target)
+idsW=np.nonzero(prediction!=digits.target)[0]
+idsC=np.nonzero(prediction==digits.target)[0]
+nbW=idsW.size
+if (nbW>=50):
+    ids = np.concatenate((idsW[:50],idsC[-50:]))
+else:
+    ids = np.concatenate((idsW[:],idsC[-(100-nbW):]))   
+
+
+# <codecell>
+
+fig, axes = plt.subplots(5,20, figsize=(16,6))
+for ax in axes.ravel():
+    ax.set_xticks([]); ax.set_yticks([]); ax.set_frame_on(False)
+for i,ax in zip(ids,axes.ravel()):
+    ax.imshow(digits.images[i],cmap='gray')
+    p=clf.predict(digits.data[[i],:])
+    if (p[0]==digits.target[i]):
+        col='green'
+    else:
+        col='red'
+    ax.set_title("#{}:\n{}/{}".format(i,p[0],digits.target[i]), dict(fontsize=8,color=col))
+    ax.set_xticks([]);  ax.set_yticks([])   
+
+
+# <markdowncell>
+# <subslide>
 # So far, so good? We completed our first machine learning example!
 # 
 # In the following, we will see how to use machine learning for image
@@ -158,326 +267,272 @@ axes[1].imshow(digits.images[-1], cmap='gray')
 # low-level pixel-based features (e.g. RGB color), to mid-level features (e.g.
 # corner, patches of high contrast), and finally to properties of segmented
 # regions.
-# 
-# **Outline**
-# 
-# - Image segmentation using pixel-based features (color and texture)
-# - Panorama stitching / image registration based on mid-level features
-# - Classifying labeled objects using their properties
-# 
-# **What we will not cover**
-# 
-# - computer vision: automatic detection / recognition of objects (faces, ...)
-# 
-# **A follow-up by Stéfan after this part** : image classification using deep
-# learning with Keras.
 
 
 # <markdowncell>
-# ## Thresholding and vector quantization
-# 
-# Image binarization is a common operation. For grayscale images, finding the
-# best threshold for binarization can be a manual operation. Alternatively,
-# algorithms can select a threshold value automatically; which is convenient for
-# computer vision, or for batch-processing a series of images.
-# 
-# Otsu algorithm is the most famous thresholding algorithm. It maximizes the
-# variance between the two segmented groups of pixels. Therefore, it is can be
-# interpreted as a **clustering** algorithm. Samples are pixels and have a
-# single feature, which is their grayscale value.
-
-
-
-# <codecell>
-
-from skimage import data, exposure, filters
-camera = data.camera()   
-
-
-
-# <codecell>
-
-hi = exposure.histogram(camera)   
-
-
-
-# <codecell>
-
-val = filters.threshold_otsu(camera)   
-
-
-
-# <codecell>
-
-fig, axes = plt.subplots(1, 2)
-axes[0].imshow(camera, cmap='gray')
-axes[0].contour(camera, [val], colors='y')
-axes[1].plot(hi[1], hi[0])
-axes[1].axvline(val, ls='--')   
+# <slide>
+# ## Supervised learning of segmentation
 
 
 # <markdowncell>
-# How can we transpose the idea of Otsu thresholding to RGB or multichannel
-# images? We can use the k-means algorithm, which aims to partition samples in k
-# clusters, where each sample belongs to the cluster of nearest mean.
+# <slide>
+# ### Learning color segmentation
 # 
-# Below we show a simple example of k-means clustering, based on the Iris
-# dataset of ``scikit-learn``. Note that the ``KMeans`` estimator
-# uses a similar API as the SVC we used for digits classification, with the .fit
-# method.
-
-
-
-# <codecell>
-
-# From http://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_iris.html
-from mpl_toolkits.mplot3d import Axes3D
-
-from sklearn.cluster import KMeans
-
-np.random.seed(5)
-
-iris = datasets.load_iris()
-X = iris.data
-y = iris.target
-
-clf = KMeans(n_clusters=3)
-              
-fig = plt.figure(figsize=(4, 3))
-ax = Axes3D(fig, rect=[0, 0, .95, 1], elev=48, azim=134)
-clf.fit(X)
-labels = clf.labels_
-
-ax.scatter(X[:, 3], X[:, 0], X[:, 2], c=labels.astype(np.float), cmap='jet')
-
-ax.w_xaxis.set_ticklabels([])
-ax.w_yaxis.set_ticklabels([])
-ax.w_zaxis.set_ticklabels([])
-ax.set_xlabel('Petal width')
-ax.set_ylabel('Sepal length')
-ax.set_zlabel('Petal length')   
-
-
-# <markdowncell>
-# k-means clustering uses the Euclidean distance in feature space to cluster
-# samples. If we want to cluster together pixels of similar color, the RGB space
-# is not well suited since it mixes together information about color and light
-# intensity. Therefore, we first transform the RGB image into [Lab
-# colorspace](https://en.wikipedia.org/wiki/Lab_color_space), and only use the
-# color channels (a and b) for clustering.
-
+# __Beach segmentation__
+# 
+# In the following example, we define manually a mask that defines 3 training
+# labels: forest, sky+water, sand. By default, pixels at 0 correspond to
+# unlabeled pixels.
 
 
 # <codecell>
 
 from skimage import io, color
-im = io.imread('../images/round_pill.jpg')   
+import numpy as np
+import matplotlib.pyplot as plt
+from skdemo import show_segmentation
 
+# Image from https://fr.wikipedia.org/wiki/Fichier:Bells-Beach-View.jpg
+beach = io.imread('../images/Bells-Beach.jpg')
+#plt.imshow(beach)
+
+# Define mask of user-labeled pixels, which will be used for training
+mask = np.zeros(beach.shape[0:2], dtype=np.uint8)
+mask[700:, 350:650] = 1
+mask[100:500, 350:650] = 2
+mask[400:450, 1000:1100] = 3
+
+colors=[[0,0,0],[0,0.5,0],[0,0,1],[1,1,0]]
+labels=['none','forest','sky+water','sand']
+
+#plt.imshow(color.label2rgb(mask, beach, colors=colors))
+show_segmentation(beach, mask, colors, labels)   
 
 
 # <codecell>
 
-im_lab = color.rgb2lab(im)
-data = np.array([im_lab[..., 1].ravel(), im_lab[..., 2].ravel()])   
+# # Uncomment this to separate sky and water
+# mask = np.zeros(beach.shape[0:2], dtype=np.uint8)
+# mask[700:, 350:650] = 1
+# mask[100:500, 350:650] = 2
+# mask[400:450, 1000:1100] = 3
+# mask[0:250, 450:750] = 4
+# mask[300:500, 350:650] = 2
+# colors=[[0,0,0],[0,0.5,0],[0,0,1],[1,1,0],[0,1,1]]
+# labels=['none','forest','water','sand','sky']
+# show_segmentation(beach, mask, colors, labels)   
+
+
+# <codecell>
+
+# # Uncomment this if the image is too large and processing takes too long
+# subk=2
+# beach2 = transform.rescale(beach, 1/subk) 
+# mask2 = np.zeros(beach2.shape[0:2], dtype=np.uint8)
+# mask2[:,:]=mask[::subk,::subk]
+# beach=beach2
+# mask=mask2   
 
 
 # <markdowncell>
-# Then we create a ``KMeans`` estimator for two clusters.
+# <subslide>
+# We define a segmentation algorithms which:
+# - uses the **RGB color channels** for each pixel as feature
+# - trains a **RandomForest** classifier from user-labeled data, which are given
+# as a mask of labels
+# - and predicts the label on all the image
+# 
+# The RandomForest algorithm chooses automatically thresholds along the
+# different feature directions, and also decides which features are the most
+# significant to discriminate between the different classes. This is very useful
+# when we don't know if all features are relevant.
 
+
+# <codecell>
+
+from sklearn.ensemble import RandomForestClassifier
+#from sklearn.svm import LinearSVC
+
+def trainable_segmentation(im_features, mask, reuseTraining=False):
+    """
+    Parameters
+    ----------
+
+    im_features: ndarray of size [height,width,nb_features], 
+        Feature map
+    
+    mask : ndarray of ints
+        Array of labels. Non-zero labels are known regions that are used
+        to train the classification algorithm.
+        
+    reuseTraining: bool
+        use training mask 
+    """
+    # Define features
+    im_features = np.atleast_3d(im_features)
+    nb_row, nb_col, nb_features = im_features.shape
+    
+    # Training data correspond to pixels labeled in mask
+    nb_training = (mask>0).sum()
+    training_data = im_features[mask>0, :]
+    training_data = training_data.reshape(nb_training, nb_features)
+    training_labels = mask[mask>0].ravel()
+    
+    # Training
+    print('Training...')
+    clf = RandomForestClassifier()
+    #clf = LinearSVC()
+    clf.fit(training_data, training_labels)
+    
+    # Prediction
+    print('Predicting...')
+    if reuseTraining:
+        # Predict only on non-training pixels
+        nb_nontraining = (mask == 0).sum()
+        data = im_features[mask == 0, :].reshape(nb_nontraining, nb_features)
+        labels = clf.predict(data)
+        result = np.copy(mask)
+        result[mask == 0] = labels
+    else:
+        # Predict on all pixels (even already labeled ones)
+        labels = clf.predict(im_features.reshape(nb_row*nb_col, nb_features))
+        result = labels.reshape(mask.shape)
+    return result   
+
+
+# <markdowncell>
+# <subslide>
+# Let's apply this supervised classification...
+
+
+# <codecell>
+
+result_rgb = trainable_segmentation(beach, mask)
+show_segmentation(beach, result_rgb, colors[1:], labels=labels[1:])   
+
+
+# <markdowncell>
+# We notice that the labels have been extended to all the pixels in the image.
+
+
+# <markdowncell>
+# <subslide>
+# If we would ignore the provided labels and run unsupervised K-means instead,
+# here is what we would get.
+# 
+# Water and sky seem to be identified fine, but sand and forest are not
+# separated.
 
 
 # <codecell>
 
 from sklearn.cluster import KMeans
-kmeans = KMeans(n_clusters=2, random_state=0).fit(data.T)
-segmentation = kmeans.labels_.reshape(im.shape[:-1])   
-
-
-
-# <codecell>
-
-plt.imshow(im)
-plt.contour(segmentation, colors='y')   
-
-
-# <markdowncell>
-# Of course we can generalize this method to more than two clusters.
-
-
-
-# <codecell>
-
-im = io.imread('../images/chapel_floor.png')
-im_lab = color.rgb2lab(im)
-data = np.array([im_lab[..., 0].ravel(),
-                 im_lab[..., 1].ravel(),
-                 im_lab[..., 2].ravel()])
-
-kmeans = KMeans(n_clusters=4, random_state=0).fit(data.T)
-segmentation = kmeans.labels_.reshape(im.shape[:-1])   
-
-
-
-# <codecell>
-
-color_mean = color.label2rgb(segmentation, im, kind='mean')
-fig, axes = plt.subplots(1, 2)
-axes[0].imshow(im)
-axes[0].axis('off')
-axes[1].imshow(color_mean)
-axes[1].axis('off')   
-
-
-# <markdowncell>
-# ### Exercise:
-# 
-# For the chapel floor image, cluster the image in 3 clusters, using only the
-# color channels (not the lightness one). What happens?
-
-
-# <markdowncell>
-# ## SLIC algorithm: clustering using color and spatial features
-# 
-# In the thresholding / vector quantization approach presented above, pixels are
-# characterized only by their color features. However, in most images
-# neighboring pixels correspond to the same object. Hence, information on
-# spatial proximity between pixels can be used in addition to color information.
-# 
-# SLIC (Simple Linear Iterative Clustering) is a segmentation algorithm which
-# clusters pixels in both space and color. Therefore, regions of space that are
-# similar in color will end up in the same segment.
-
-
-
-# <codecell>
-
-spices = io.imread('../images/spices.jpg')
-plt.imshow(spices)   
-
-
-# <markdowncell>
-# Let us try to segment the different spices using the previous k-means
-# approach. One problem is that there is a lot of texture coming from the relief
-# and shades.
-
-
-
-# <codecell>
-
-im_lab = color.rgb2lab(spices)
-data = np.array([im_lab[..., 1].ravel(),
-                 im_lab[..., 2].ravel()])
-
-kmeans = KMeans(n_clusters=10, random_state=0).fit(data.T)
-labels = kmeans.labels_.reshape(spices.shape[:-1])
-color_mean = color.label2rgb(labels, spices, kind='mean')
-plt.imshow(color_mean)   
-
-
-
-# <codecell>
-
 from skimage import segmentation
-plt.imshow(segmentation.mark_boundaries(spices, labels))   
+data=color.rgb2lab(beach).reshape(-1,3)[:,1:3]
+kmeans = KMeans(n_clusters=3, random_state=1).fit(data)
+result = 1+kmeans.labels_.reshape(beach.shape[:2]) # Add 1 so that label 0 means 'no label'
+show_segmentation(beach, result, cmap='gray')   
 
 
 # <markdowncell>
-# SLIC is a superpixel algorithm, which segments an image into patches
-# (superpixels) of neighboring pixels with a similar color. SLIC also works in
-# the Lab colorspace. The ``compactness`` parameter controls the relative
-# importance of the distance in image- and color-space.
-
-
-
-# <codecell>
-
-from skimage import segmentation
-segments = segmentation.slic(spices, n_segments=200, compactness=20)   
-
+# <subslide>
+# __Segment the Zebra__
+# 
+# Let's try on another example
 
 
 # <codecell>
 
-plt.imshow(segmentation.mark_boundaries(spices, segments))   
+zebra = io.imread('../images/zebra.jpg')
+plt.imshow(zebra)
 
+zmask = np.zeros(zebra.shape[0:2], dtype=np.uint8)
+zmask[80:110, 100:250] = 1
+zmask[150:220, 50:80] = 2
+zmask[10:30, 150:200] = 2
+zmask[150:220, 170:200] = 2
+
+colors=[[0,0,0],[1,0.5,0],[0,1,0]]
+labels=['none','zebra','background']
+plt.figure()
+plt.imshow(color.label2rgb(zmask, zebra, colors=colors))   
 
 
 # <codecell>
 
-result = color.label2rgb(segments, spices, kind='mean')
-plt.imshow(result)   
+result = trainable_segmentation(zebra, zmask)
+show_segmentation(zebra, result, colors, labels)   
 
 
 # <markdowncell>
-# After the super-pixel segmentation (which is also called oversegmentation,
-# because we end up with more segments that we want to), we can add a second
-# clustering step to join superpixels belonging to the same spice heap.
-
-
-
-# <codecell>
-
-im_lab = color.rgb2lab(result)
-data = np.array([im_lab[..., 1].ravel(),
-                 im_lab[..., 2].ravel()])
-
-kmeans = KMeans(n_clusters=5, random_state=0).fit(data.T)
-labels = kmeans.labels_.reshape(spices.shape[:-1])
-color_mean = color.label2rgb(labels, spices, kind='mean')
-plt.imshow(segmentation.mark_boundaries(spices, labels))   
-
-
-# <markdowncell>
-# Note that other superpixel algorithms are available, such as **Felzenswalb**
+# Using only RGB color, the classification has only very little information to
+# decide if a pixel belong to the zebra or not, hence the noisy aspect of the
 # segmentation.
 
 
+# <markdowncell>
+# <subslide>
+# ### Increasing the number of features
+# To get more information, we can preprocess the image with various filters to
+# associate different type of information. For instance, with a scale-space,
+# each pixel receives also the color of images filtered at different scales,
+# which depends on the local neighourood. The decision then does not need to be
+# based on the color of this pixel alone, but also takes into account the
+# average color around the pixel.
+
 
 # <codecell>
 
-result = segmentation.felzenszwalb(spices, scale=100)
-plt.imshow(color.label2rgb(result, spices, kind='mean'))   
+from skimage import filters
 
+def compute_features_scalespace(im, sigmas=[1/2,1,2,4], with_sobel=False):
+    im = np.atleast_3d(im)
+    nb_scales = len(sigmas)
+    nb_channels = im.shape[2]
+    #sigmas = np.logspace(omin,omax, num=nb_scales, base=2)
+    im_size = im.shape[:2]
+    im_features = np.empty((im.shape[0], im.shape[1], nb_scales*nb_channels))
+    for i,s in enumerate(sigmas):
+        tmp = filters.gaussian(im,s, multichannel=True)
+        im_features[:,:,i:i+nb_scales*nb_channels:nb_scales] = tmp
+    if with_sobel:
+        for i in range(im_features.shape[2]):
+            edges = np.atleast_3d(filters.sobel(im_features[:,:,i]))
+            im_features=np.concatenate((im_features, edges), axis=2)
+            #im_features[:,:,[i]]=edges
+    return im_features   
 
 
 # <codecell>
 
-plt.imshow(segmentation.mark_boundaries(spices, result))   
+zfeatures = compute_features_scalespace(zebra, sigmas=[1,2,4])  
+show_features(zfeatures, nx=9)   
 
 
 # <markdowncell>
-# ### Exercise
-# 
-# Repeat the same operations (SLIC superpixel segmentation, followed by K-Means
-# clustering on the average color of superpixels) on the astronaut image. Vary
-# the following parameters
-# - slic: n_segments and compactness
-# - KMeans: n_clusters (start with 8 for example)
-
+# <subslide>
+# By combining this with Lab color space, we obtain a set of diverse features
+# that are suitable for more complex segmentation rules, as it combines both
+# **color and spatial information**:
 
 
 # <codecell>
 
-from skimage import data
-astro = data.astronaut()   
-
-
-
-# <codecell>
-
-# solution goes here   
+zfeatures = compute_features_scalespace(color.rgb2lab(zebra), sigmas=[1/2,1,2,4])  
+show_features(zfeatures, nx=4)
+result = trainable_segmentation(zfeatures, zmask)
+show_segmentation(zebra, result, colors, labels)   
 
 
 # <markdowncell>
-# ## Increasing the number of low-level features: trained segmentation using
-# Gabor filters and random forests
+# <subslide>
+# ### Texture features
 # 
 # In the examples above, a small number of features per pixel was used: either a
 # color triplet only, or a color triplet and its (x, y) position. However, it is
 # possible to use other features, such as the local texture. Texture features
 # can be obtained using Gabor filters, which are Gaussian kernels modulated by a
 # sinusoidal wave.
-
 
 
 # <codecell>
@@ -541,246 +596,148 @@ for label, (kernel, powers), ax_row in zip(kernel_params, results, axes[1:]):
 
 
 # <markdowncell>
+# <subslide>
 # We define a segmentation algorithms which:
-# - computes different features for Gabor filters of different scale and angle,
-# for every pixel
+# - computes different **texture features using Gabor filters** of different
+# scale and angle, for every pixel
 # - trains a **RandomForest** classifier from user-labeled data, which are given
 # as a mask of labels
 # - and predicts the label of the remaining non-labeled pixels
 # 
-# The RandomForest algorithm chooses automatically thresholds along the
-# different feature directions, and also decides which features are the most
-# significant to discriminate between the different classes. This is very useful
-# when we don't know if all features are relevant.
-
+# The Gabor features provides the classifier with more information that just the
+# color, as they capture also the texture aspect in the image.
 
 
 # <codecell>
 
-from sklearn.ensemble import RandomForestClassifier
 from skimage import filters
 from skimage import img_as_float
 
-def _compute_features(im):
-    gabor_frequencies = np.logspace(-3, 1, num=5, base=2)
-    thetas = [0, np.pi/2]
+def compute_features_gabor(im, thetas=[0, np.pi/2], gabor_frequencies=None):
+    if (gabor_frequencies is None):
+        gabor_frequencies = np.logspace(-3, 0, num=4, base=2)
     nb_fq = len(gabor_frequencies) * len(thetas)
     im = np.atleast_3d(im)
-    im_gabor = np.empty((im.shape[-1], nb_fq) + im.shape[:2])
-    for ch in range(im.shape[-1]):
+    nb_ch=im.shape[-1]
+    im_size = im.shape[:2]
+    im_gabor = np.empty(im_size + (nb_ch, nb_fq))
+    for ch in range(nb_ch):
         img = img_as_float(im[..., ch])
         for i_fq, fq in enumerate(gabor_frequencies):
             for i_th, theta in enumerate(thetas):
                 tmp = filters.gabor(img, fq, theta=theta)
-                im_gabor[ch, len(thetas) * i_fq + i_th] = \
+                im_gabor[:,:, ch, len(thetas) * i_fq + i_th] = \
                                     np.abs(tmp[0] + 1j * tmp[1])
-    return im_gabor
-
-
-def trainable_segmentation(im, mask):
-    """
-    Parameters
-    ----------
-    
-    im : ndarray
-        2-D image (grayscale or RGB) to be segmented
-        
-    mask : ndarray of ints
-        Array of labels. Non-zero labels are known regions that are used
-        to train the classification algorithm.
-    """
-    # Define features
-    im_gabor = _compute_features(im)     
-    nb_ch, nb_fq, sh_1, sh2 = im_gabor.shape
-    # Training data correspond to pixels labeled in mask
-    training_data = im_gabor[:, :, mask>0]
-    training_data = training_data.reshape((nb_ch * nb_fq,
-                                         (mask>0).sum())).T
-    training_labels = mask[mask>0].ravel()
-    # Data are from the remaining pixels
-    data = im_gabor[:, :, mask == 0].reshape((nb_ch * nb_fq,
-                                              (mask == 0).sum())).T
-    # classification
-    clf = RandomForestClassifier()
-    clf.fit(training_data, training_labels)
-    labels = clf.predict(data)
-    result = np.copy(mask)
-    result[mask == 0] = labels
-    return result   
-
-
-
-# <codecell>
-
-# Image from https://fr.wikipedia.org/wiki/Fichier:Bells-Beach-View.jpg
-beach = io.imread('../images/Bells-Beach.jpg')   
-
-
-
-# <codecell>
-
-# Define mask of user-labeled pixels, which will be used for training
-mask = np.zeros(beach.shape[:-1], dtype=np.uint8)
-mask[700:] = 1
-mask[:550, :650] = 2
-mask[400:450, 1000:1100] = 3
-plt.imshow(beach)
-plt.contour(mask, colors='y')   
-
-
-
-# <codecell>
-
-result = trainable_segmentation(beach, mask)
-plt.imshow(color.label2rgb(result, beach, kind='mean'))   
+    im_gabor = im_gabor.reshape((im_size[0],im_size[1],nb_ch*nb_fq))
+    return im_gabor   
 
 
 # <markdowncell>
-# ## Using mid-level features
-# 
-# 
-
+# <subslide>
+# Let's apply this to segment a textured image
 
 
 # <codecell>
 
-from skimage import data
-camera = data.camera()
-from skimage import feature
-corner_camera = feature.corner_harris(camera)
-coords = feature.corner_peaks(corner_camera)
-plt.imshow(camera, cmap='gray')
-plt.plot(coords[:, 1], coords[:, 0], 'o')
-plt.xlim(0, 512)
-plt.ylim(512, 0)   
+# Load textured patch (source http://w3.ualg.pt/~dubuf/pubdat/texture/texture.html)
+patch = io.imread('../images/patch3.gif')
+plt.imshow(patch)
+
+from matplotlib.colors import ListedColormap
+from matplotlib.cm import ScalarMappable
+
+pmask = np.zeros(patch.shape[0:2], dtype=np.uint8)
+pmask[210:240, 20:50] = 1
+pmask[210:240, 80:110] = 2
+pmask[210:240, 140:170] = 3
+pmask[20:50, 80:110] = 4
+pmask[150:180, 20:50] = 5
+pmask[80:110, 90:120] = 6
+pmask[150:180, 90:120] = 7
+
+colors=[[0,0,0],[1,0.5,0],[0,1,0],[0,0,1],[1,0,1],[1,1,0],[1,0,0],[0,1,1]]
+labels=['none','1','2','3','4','5','6','7']
+plt.imshow(color.label2rgb(pmask, patch, colors=colors))
+discrete_colorbar(colors)   
 
 
 # <markdowncell>
-# [Panorama stitching](example_pano.ipynb)
-# 
-# [A longer example](adv3_panorama-stitching.ipynb)
-# 
-# ### Exercise
-# 
-# Represent the ORB keypoint of the camera-man
-
+# <subslide>
+# __Approach 1:__ Classification based on gray level only...
 
 
 # <codecell>
 
-# solution goes here   
+result = trainable_segmentation(patch, pmask)
+show_segmentation(patch, result, colors, cmap='gray')   
 
 
 # <markdowncell>
-# ## Clustering or classifying labeled objects
+# Most patches have similar gray levels, so gray-level only can not discriminate
+# between them.
+
+
+# <markdowncell>
+# <subslide>
+# __Approach 2:__ Classification based on gaussian scale-space.
+
+
+# <codecell>
+
+pfeatures = compute_features_scalespace(patch, sigmas=[1/2,1,2,4], with_sobel=False)
+show_features(pfeatures)
+result = trainable_segmentation(pfeatures, pmask)
+show_segmentation(patch, result, colors, cmap='gray')   
+
+
+# <markdowncell>
+# Some classes are partially detected (2, 5, 6 mostly). The rest is still quite
+# mixed.
+
+
+# <markdowncell>
+# <subslide>
+# __Approach 3:__ Classification based on Gabor texture features.
+
+
+# <codecell>
+
+pfeatures = compute_features_gabor(patch, thetas=[0, np.pi/4, np.pi/2, np.pi*3/4], gabor_frequencies=[1/2,1/4,1/8])
+#pfeatures = np.concatenate((pfeatures, compute_features_scalespace(patch)),axis=2)
+show_features(pfeatures, nx=4)
+result = trainable_segmentation(pfeatures, pmask)
+show_segmentation(patch, result, colors, cmap='gray')   
+
+
+# <markdowncell>
+# The Gabor features extracts the most relevant visual information for
+# recognizing the various textures compared to scale-space and gray-level
+# features. Although the boundaries are not very precise, most of each patch is
+# correctly classified.
 # 
-# We have already seen how to use ``skimage.measure.regionprops`` to extract the
-# properties (area, perimeter, ...) of labeled objects. These properties can be
-# used as features in order to cluster the objects in different groups, or to
-# classify them if given a training set.
+# The set of visual features to use is dependent on the problem. For recognizing
+# sand, forest and water, the color features worked well; for recognizing
+# textures, Gabor features work better.
+
+
+# <markdowncell>
+# <subslide>
+# __Comparison with clustering:__ As a side note, could this segmentation be
+# found using only unsupervised segmentation with K-Means?
 # 
-# In the example below, we use ``skimage.data.binary_blobs`` to generate a
-# binary image. We use several properties to generate features: the area, the
-# ratio between squared perimeter and area, and the solidity (which is the area
-# fraction of the object as compared to its convex hull). We would like to
-# separate the big convoluted particles from the smaller round ones. Here I did
-# not want to bother with a training set, so we will juste use clustering
-# instead of classifying.
-
-
-
-# <codecell>
-
-from skimage import measure
-from skimage import data
-im = data.binary_blobs(length=1024, blob_size_fraction=0.05,
-                         volume_fraction=0.2)
-labels = measure.label(im)
-props = measure.regionprops(labels)
-
-data = np.array([(prop.area,
-                  prop.perimeter**2/prop.area,
-                  prop.solidity) for prop in props])   
-
+# After clustering, we can recognize the patch regions, but we notice both
+# oversegmentation (class 5 split into clusters 3 and 5) and undersegmentation
+# (cluster 4 overlaps classes 2, 3, 4 and a bit of 7). If there is not an
+# obvious difference in feature space between the clusters that unsupervised
+# classification could detect, supervised classification is needed to produce a
+# segmentation that makes sense.
 
 
 # <codecell>
 
-plt.imshow(labels, cmap='spectral')   
-
-
-# <markdowncell>
-# Once again we use the KMeans algorithm to cluster the objects. We visualize
-# the result as an array of labels.
-
-
-
-# <codecell>
-
-clf = KMeans(n_clusters=2)
-
-clf.fit(data)
-
-
-def reshape_cluster_labels(cluster_labels, image_labels):
-    """
-    Some NumPy magic
-    """
-    cluster_labels = np.concatenate(([0], cluster_labels + 1))
-    return cluster_labels[image_labels]
-    
-
-object_clusters = reshape_cluster_labels(clf.labels_, labels)
-plt.imshow(object_clusters, cmap='spectral')   
-
-
-# <markdowncell>
-# However, our features were not carefully designed. Since the ``area`` property
-# can take much larger values than the other properties, it dominates the other
-# ones. To correct this effect, we can normalize the area to its maximal value.
-
-
-
-# <codecell>
-
-data[:, 0] /= data[:, 0].max()
-
-clf.fit(data)
-
-object_clusters = reshape_cluster_labels(clf.labels_, labels)
-plt.imshow(object_clusters, cmap='spectral')
-   
-
-
-# <markdowncell>
-# A better way to do the rescaling is to use of the scaling methods provided by
-# ``sklearn.preprocessing``. The ``StandardScaler`` makes sure that every
-# feature has a zero mean and a unit standard deviation.
-
-
-
-# <codecell>
-
-from sklearn import preprocessing
-min_max_scaler = preprocessing.StandardScaler()
-data_scaled = min_max_scaler.fit_transform(data)
-
-clf = KMeans(n_clusters=2)
-
-clf.fit(data_scaled)
-
-object_clusters = reshape_cluster_labels(clf.labels_, labels)
-plt.imshow(object_clusters, cmap='spectral')   
-
-
-# <markdowncell>
-# ###Exercise
-# 
-# Replace the area property by the eccentricity, so that clustering separates
-# compact and convoluted particles, regardless of their size.
-
-
-
-# <codecell>
-
-   
+from sklearn.cluster import KMeans
+from skimage import segmentation
+data = pfeatures.reshape(-1,pfeatures.shape[-1])
+kmeans = KMeans(n_clusters=7, random_state=5).fit(data)
+result = 1+kmeans.labels_.reshape(patch.shape) # Add 1 so that label 0 means 'no label'
+show_segmentation(patch, result, colors=None, cmap='gray')   

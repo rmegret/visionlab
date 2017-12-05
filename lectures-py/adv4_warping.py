@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -26,7 +25,6 @@ import numpy as np
 # 
 # The following code shows how to rotate an image using the skimage (scikit-
 # image) library.
-
 
 
 # <codecell>
@@ -58,11 +56,9 @@ ax1.imshow(rotated, cmap='gray');
 # ### A problematic approach
 
 
-
 # <codecell>
 
 from skimage import color   
-
 
 
 # <codecell>
@@ -112,7 +108,6 @@ plt.imshow(rotated, cmap='gray', interpolation='nearest');
 # ...this is not an optimal approach
 
 
-
 # <codecell>
 
 # Attempt at fixing the holes using a median filter
@@ -133,12 +128,10 @@ for x in range(1, width - 1):
 plt.imshow(out, cmap='gray', interpolation='nearest');   
 
 
-
 # <codecell>
 
 A = np.array([[4, 2], [1, 6]])
 print(A)   
-
 
 
 # <codecell>
@@ -164,7 +157,6 @@ plt.imshow(A, cmap='gray', interpolation='nearest');
 # ## Fish-eye
 
 
-
 # <codecell>
 
 from skimage import transform, data, io
@@ -178,13 +170,11 @@ face = io.imread('../images/stefan.jpg')
 face = face[:185, 15:]   
 
 
-
 # <codecell>
 
 plt.imshow(face)
 plt.plot([face.shape[1]/2.], [face.shape[0]/2.], 'or', markersize=14, alpha=0.4)
 plt.axis('image');   
-
 
 
 # <codecell>
@@ -202,7 +192,6 @@ def fisheye(xy):
     r = 0.8 * np.exp(r**(1/2.1) / 1.8)
 
     return np.column_stack((r * np.cos(theta), r * np.sin(theta))) + center   
-
 
 
 # <codecell>
@@ -249,7 +238,6 @@ plt.show()
 # # Here's code for a swirl transform:
 
 
-
 # <codecell>
 
 from skimage import transform
@@ -286,7 +274,6 @@ parameters = {'center': [w/2., h/2.],
 out = transform.warp(face, swirl, parameters)   
 
 
-
 # <codecell>
 
 f, (ax0, ax1) = plt.subplots(1, 2, figsize=(8, 4))
@@ -299,7 +286,6 @@ ax1.imshow(out);
 # # Can you come up with an even better distortion?
 # 
 # ## Start with this template:
-
 
 
 # <codecell>
@@ -326,7 +312,6 @@ ax1.imshow(out);
 # scikit-image allows you to compose several transformations.  For example:
 
 
-
 # <codecell>
 
 from skimage import data
@@ -345,7 +330,6 @@ ax2.imshow(transform.warp(cat, multiple_shifts.inverse));
 # <markdowncell>
 # The `transform` module allows us to rotate images.  The inner workings is
 # something like this:
-
 
 
 # <codecell>
@@ -444,7 +428,6 @@ plt.imshow(my_rotate(cat, 30))
 # In the meantime, I provide some code to calculate $H$:
 
 
-
 # <codecell>
 
 from skimage.transform import estimate_transform
@@ -469,7 +452,6 @@ print(H)
 # position in the original image.
 
 
-
 # <codecell>
 
 # Verify that the top left corner maps to (0, 0)
@@ -484,7 +466,6 @@ print(z)
 
 # <markdowncell>
 # ### Here's a template solution:
-
 
 
 # <codecell>
@@ -537,9 +518,3 @@ ax1.imshow(out)
 
 # <markdowncell>
 # # For more fun examples see http://scikit-image.org/docs/dev/auto_examples
-
-
-
-# <codecell>
-
-   

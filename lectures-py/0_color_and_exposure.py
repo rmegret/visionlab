@@ -29,6 +29,10 @@
 
 # <codecell>
 
+# Get rid of some annoying warnings (use "always" if looking for weird bugs)
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
 # Basic imports for Numpy and Matplotlib
 from __future__ import division, print_function
 import numpy as np
@@ -53,10 +57,58 @@ import skdemo
 
 # <codecell>
 
+from skimage import img_as_float
+
 color_image = data.chelsea()
+color_image = img_as_float(color_image)
 
 print(color_image.shape) 
 plt.imshow(color_image);   
+
+
+# <codecell>
+
+from skimage import color
+lab = color.rgb2lab(color_image)
+#skdemo.imshow_all(lab[...,0],lab[...,1],lab[...,2])
+
+#plt.figure()
+#plt.imshow(lab[...,1] > 20)
+skdemo.imshow_all(lab[...,0],lab[...,1],lab[...,2])
+skdemo.colorbars()
+
+mask=(lab[...,1]<2) | (lab[...,1]>30)
+skdemo.imshow_all(lab[...,1]<2, lab[...,1]>30,
+                  mask,
+                  titles=['eyes','nose', 'both'])
+   
+
+
+# <codecell>
+
+image2 = color_image.copy()
+#image2[mask,:]=[255,0,0]
+#plt.imshow(image2)
+
+mask1=np.atleast_3d(lab[...,1]<3)
+mask2=np.atleast_3d(lab[...,1]>30)
+
+print(color_image.shape, np.atleast_3d((~mask).astype(float)).shape)
+fmask = np.atleast_3d((~mask).astype(float)) * 0.5 + 0.5
+image2 = color_image * (~mask1 & ~mask2) + mask1 * [1,0,0] + mask2 * [0,0,1]
+plt.imshow(image2)
+
+#fig = plt.figure()
+#plt.imshow((~mask).astype(float))
+#skdemo.colorbars()   
+
+
+# <codecell>
+
+## fig, axes = plt.subplots(1,3,figsize=(10,3))
+axes[0].hist(lab[...,0].ravel(),100);
+axes[1].hist(lab[...,1].ravel(),100);
+axes[2].hist(lab[...,2].ravel(),100);   
 
 
 # <markdowncell>
@@ -153,17 +205,22 @@ plt.imshow(color_image);
 import skdemo
 
 # Uncomment and press <TAB> to see available functions in `skdemo`
-#skdemo.  # <TAB>   
+#skdemo.imshow_all()   
 
 
 # <codecell>
 
 # This code is just a template to get you started.
-red_image = np.ones((1,1)) # TODO: replace with your code
-green_image = np.ones((1,1)) # TODO
-blue_image = np.ones((1,1)) # TODO
+red_image = color_image[:,:,0] # TODO: replace with your code
+green_image = color_image[:,:,1] # TODO
+blue_image = color_image[:,:,2] # TODO
 
-skdemo.imshow_all(color_image, red_image, green_image, blue_image)   
+skdemo.imshow_all(color_image, red_image, green_image, blue_image,
+                 titles=['input', 'R', 'G', 'B'])
+f=plt.gcf()
+plt.sca(f.axes[1])
+f.axes[1].set_xticks(range(0,200,32))
+skdemo.colorbars(f.axes[1])   
 
 
 # <markdowncell>
@@ -173,10 +230,24 @@ skdemo.imshow_all(color_image, red_image, green_image, blue_image)
 
 # <codecell>
 
-fig, axes = plt.subplots(1, 4, figsize=(10,2))
+fig, axes = plt.subplots(2, 2, figsize=(6,4))
+axes=axes.ravel()
+
 axes[0].imshow(color_image)
-axes[1].imshow(green_image)
-# etc...   
+axes[0].set_title('color')
+
+plt.sca(axes[1])
+plt.imshow(red_image)
+plt.title('R')
+plt.xticks(range(0,200,32))
+
+plt.sca(axes[2])
+plt.imshow(green_image)
+plt.title('G')
+
+plt.sca(axes[3])
+plt.imshow(blue_image)
+plt.title('R')   
 
 
 # <markdowncell>
@@ -219,13 +290,6 @@ plt.imshow(color_patches);
 
 
 # <markdowncell>
-# <notes>
-# That didn't work as expected. How would you fix the call above to make it work
-# correctly?
-# (Hint: that's a 2-D array, ``numpy.ravel``)
-
-
-# <markdowncell>
 # <slide>
 # ### Histograms of images
 
@@ -254,7 +318,8 @@ plt.imshow(color_patches);
 # <codecell>
 
 image = data.camera()
-skdemo.imshow_with_histogram(image);   
+skdemo.imshow_with_histogram(image);
+skdemo.colorbars()   
 
 
 # <markdowncell>
@@ -284,8 +349,21 @@ skdemo.imshow_with_histogram(cat, xlim=[0,255]);
 
 
 # <markdowncell>
-# How is it done with core functions ? Simplest is to use matplotlib `hist` with
-# a flattened representation given by `ravel`:
+# How is it done with core functions ?
+# We might be inclined to just passs the image to the `plt.hist` function which
+# plots histograms:
+
+
+# <codecell>
+
+plt.hist(image.ravel(),range(0,255));   
+
+
+# <markdowncell>
+# <notes>
+# That didn't work as expected. How would you fix the call above to make it work
+# correctly?
+# (Hint: that's a 2-D array, we need first to flatten it using ``numpy.ravel``)
 
 
 # <codecell>
@@ -300,7 +378,12 @@ skdemo.imshow_with_histogram(cat, xlim=[0,255]);
 image = cat[...,1]  # Extract channel G
 print("image.shape           =",image.shape, "  image.size =",image.size)
 print("np.ravel(image).shape =",np.ravel(image).shape)
-vals, bins, _ = plt.hist(np.ravel(image), color='g')   
+vals, bins, patches = plt.hist(np.ravel(image), color='g')   
+
+
+# <codecell>
+
+plt.plot((bins[0:-1]+bins[1:])/2, vals, '.-')   
 
 
 # <markdowncell>
@@ -386,12 +469,14 @@ axi,axh = skdemo.imshow_with_histogram(image);
 # <codecell>
 
 from skimage import exposure
-high_contrast = exposure.rescale_intensity(image, in_range=(10, 180))   
+high_contrast = exposure.rescale_intensity(image, in_range=(160, 170), out_range=(150,200))
 
-
-# <codecell>
-
-skdemo.imshow_with_histogram(high_contrast,xlim=[-5,260]);   
+skdemo.imshow_with_histogram(image.astype(np.uint8),xlim=[-5,260]);
+skdemo.colorbars()
+skdemo.imshow_with_histogram(high_contrast,xlim=[-5,260]);
+skdemo.colorbars()
+fig = plt.figure()
+skdemo.imshow_all(image,high_contrast)   
 
 
 # <markdowncell>
@@ -593,13 +678,16 @@ skdemo.imshow_with_histogram(image);
 
 # <codecell>
 
-threshold = 50
+threshold = 145
+threshold2 = 87
 
 ax_image, ax_hist = skdemo.imshow_with_histogram(image)
 # This is a bit of a hack that plots the thresholded image over the original.
 # This just allows us to reuse the layout defined in `plot_image_with_histogram`.
-ax_image.imshow(image > threshold)
-ax_hist.axvline(threshold, color='red');   
+#ax_image.imshow( (image > threshold2) )
+ax_image.imshow( (image < threshold) & (image > threshold2) )
+ax_hist.axvline(threshold, color='red');
+ax_hist.axvline(threshold2, color='blue');   
 
 
 # <markdowncell>
@@ -629,6 +717,12 @@ print(threshold)
 
 # <codecell>
 
+skdemo.imshow_with_histogram(image)   
+
+
+# <codecell>
+
+image = data.coins()
 plt.imshow(image > threshold);   
 
 
@@ -686,8 +780,9 @@ plt.imshow(color_image);
 
 from skimage import color
 
+color_image = io.imread('../images/balloon.jpg')
 lab_image = color.rgb2lab(color_image)
-lab_image.shape   
+print(lab_image.shape, lab_image.dtype)   
 
 
 # <markdowncell>
@@ -698,7 +793,18 @@ lab_image.shape
 
 # <codecell>
 
-plt.imshow(lab_image);   
+#plt.imshow(lab_image);   
+
+
+# <markdowncell>
+# Depending on your version on Matplotlib, you may end up with garbage or an
+# error:
+# 
+#     ValueError: Floating point image RGB values must be in the 0..1 range.
+# 
+# This is because `imshow` assume that 3 channels images passed as arguments are
+# RGB. Lab images do not have the same dynamics, which prevent displaying them
+# directly that way. Let's look at the L, a, b channels individually:
 
 
 # <codecell>
@@ -756,7 +862,40 @@ skdemo.colorbars(axes=plt.gcf().axes[1:]); plt.tight_layout()
 
 # <codecell>
 
-# Your code here   
+from skimage import img_as_float, img_as_ubyte
+from skimage.transform import resize
+image = io.imread('../images/greenscreen.jpg')
+bg = io.imread('../images/forest.jpg')
+image = img_as_float(image)
+bg = img_as_float(bg)
+
+bg = resize(bg, image.shape)  # need to resize background to same size as image
+
+skdemo.imshow_with_histogram(img_as_ubyte(image), xlim=[0,255]);
+
+mask=(image[:,:,1]>150/255) & (image[:,:,0]<100/255)
+lab = color.rgb2lab(image)
+mask = lab[...,1]<-40
+
+fmask = np.atleast_3d(mask) #mask.reshape( (375,500,1) )
+
+out=image.copy()
+out = image*(1-fmask) + bg * fmask
+#out[mask,:] = bg[mask,:]
+
+skdemo.imshow_all(image, bg, mask, out)   
+
+
+# <codecell>
+
+a = np.array(range(7)).reshape(1,7)
+b = np.array(range(0,10,2)).reshape(5,1)
+
+print('a=\n',a)
+
+print('b=\n',b)
+
+print('a+b=\n',a+b)   
 
 
 # <markdowncell>

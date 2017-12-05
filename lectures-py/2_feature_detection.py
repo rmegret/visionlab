@@ -3,13 +3,6 @@
 
 
 
-
-# <codecell>
-
-from __future__ import division, print_function
-%matplotlib inline   
-
-
 # <markdowncell>
 # <slide>
 # # Feature detection
@@ -22,25 +15,24 @@ from __future__ import division, print_function
 # are a wealth of feature detectors that are available.
 
 
-# <markdowncell>
-# <slide>
-# ## Edge detection
-
-
-# <markdowncell>
-# <notes>
-# Before we start, let's set the default colormap to grayscale and turn off
-# pixel interpolation.
-
-
-
 # <codecell>
+
+from __future__ import division, print_function
+%matplotlib inline
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 plt.rcParams['image.cmap'] = 'gray'
-plt.rcParams['image.interpolation'] = 'none'   
+plt.rcParams['image.interpolation'] = 'none'
+
+import warnings
+warnings.filterwarnings('ignore',category=UserWarning)   
+
+
+# <markdowncell>
+# <slide>
+# ## Edge detection
 
 
 # <markdowncell>
@@ -49,13 +41,12 @@ plt.rcParams['image.interpolation'] = 'none'
 # section.
 
 
-
 # <codecell>
 
 import skdemo
 from skimage import data
 # Rename module so we don't shadow the builtin function
-import skimage.filter as filters
+from skimage import filters
 
 image = data.camera()
 pixelated = image[::10, ::10]
@@ -71,7 +62,6 @@ skdemo.imshow_all(pixelated, gradient)
 # We can apply a bit more logic to *detect* an edge; i.e. we can use that
 # filtered image to make a *decision* whether or not a pixel is on an edge. The
 # simplest way to do that is with thresholding:
-
 
 
 # <codecell>
@@ -117,7 +107,6 @@ skdemo.imshow_all(gradient, gradient > 0.4)
 # we first smooth the image using a gradient filter:
 
 
-
 # <codecell>
 
 from skimage import img_as_float
@@ -125,7 +114,7 @@ from skimage import img_as_float
 sigma = 1  # Standard-deviation of Gaussian; larger smooths more.
 pixelated_float = img_as_float(pixelated)
 pixelated_float = pixelated
-smooth = filters.gaussian_filter(pixelated_float, sigma)
+smooth = filters.gaussian(pixelated_float, sigma)
 skdemo.imshow_all(pixelated_float, smooth)   
 
 
@@ -137,7 +126,6 @@ skdemo.imshow_all(pixelated_float, smooth)
 # <markdowncell>
 # <notes>
 # Next, we apply our edge filter:
-
 
 
 # <codecell>
@@ -163,7 +151,6 @@ skdemo.imshow_all(smooth, gradient_magnitude)
 # this, we thin the image using "non-maximal suppression". This takes the edge-
 # filtered image and thins the response *across* the edge direction; i.e. in the
 # direction of the maximum gradient:
-
 
 
 # <codecell>
@@ -209,7 +196,6 @@ skdemo.imshow_all(zoomed_grad, grad_along_edge, limits='dtype')
 # These two thresholds are displayed below:
 
 
-
 # <codecell>
 
 from skimage import color
@@ -248,16 +234,16 @@ plt.imshow(demo_image)
 # Now we're ready to look at the actual result:
 
 
-
 # <codecell>
 
 from IPython.html import widgets
 from skimage import data
+from skimage import feature
 
 image = data.coins()
 
 def canny_demo(**kwargs):
-    edges = filters.canny(image, **kwargs)
+    edges = feature.canny(image, **kwargs)
     plt.imshow(edges)
     plt.show()
 # As written, the following doesn't actually interact with the
@@ -288,7 +274,7 @@ widgets.interact(canny_demo);  # <-- add keyword arguments for `canny`
 # <markdowncell>
 # <notes>
 # When taking image data for an experiment, the end goal is often to detect some
-# sort of feature. Here are a few examples from some of my own research.
+# sort of feature. Here are a few examples from research works.
 
 
 # <markdowncell>
@@ -298,15 +284,16 @@ widgets.interact(canny_demo);  # <-- add keyword arguments for `canny`
 
 # <markdowncell>
 # <notes>
-# I got started with image processing when I needed to detect the position of a
-# device I built to study swimming in viscous environments (low-Reynolds
-# numbers):
-
+# Image processing was used to detect the position of a device built to study
+# swimming in viscous environments (low-Reynolds numbers):
 
 
 # <codecell>
 
-from IPython.display import Image, YouTubeVideo
+from IPython.display import Image, YouTubeVideo   
+
+
+# <codecell>
 
 YouTubeVideo('1Pjlj9Pymx8')   
 
@@ -318,22 +305,18 @@ YouTubeVideo('1Pjlj9Pymx8')
 
 # <markdowncell>
 # <notes>
-# For my post-doc, I ended up investigating the collection of fog from the
-# environment and built the apparatus displayed below:
-
+# Another application is analysis of the collection of fog from the environment
+# using the apparatus displayed below:
 
 
 # <codecell>
 
-from IPython.display import Image, YouTubeVideo
-
-Image(filename='images/fog_tunnel.png')   
+Image(filename='figs/fog_tunnel.png')   
 
 
 # <markdowncell>
 # <notes>
 # The resulting experiments looked something like this:
-
 
 
 # <codecell>
@@ -350,10 +333,9 @@ YouTubeVideo('14qlyhnyjT8')
 # you most of the way there:
 
 
-
 # <codecell>
 
-Image(filename='images/particle_detection.png')   
+Image(filename='figs/particle_detection.png')   
 
 
 # <markdowncell>
@@ -367,7 +349,6 @@ Image(filename='images/particle_detection.png')
 # then we can see droplets accumulating on the surface:
 
 
-
 # <codecell>
 
 YouTubeVideo('_qeOggvx5Rc')   
@@ -379,7 +360,6 @@ YouTubeVideo('_qeOggvx5Rc')
 # view on the substrate in the video below:
 
 
-
 # <codecell>
 
 YouTubeVideo('8utP9Ju_rdc')   
@@ -387,17 +367,16 @@ YouTubeVideo('8utP9Ju_rdc')
 
 # <markdowncell>
 # <notes>
-# At the time, I was interested in figuring out how droplet sizes evolved. To
-# accomplish that, we could open up each frame in some image-analysis software
+# The researchers were interested in figuring out how droplet sizes evolved. To
+# accomplish that, they could open up each frame in some image-analysis software
 # and manually measure each drop size. That becomes pretty tediuous, pretty
 # quickly. Using feature-detection techniques, we can get a good result with
 # significantly less effort.
 
 
-
 # <codecell>
 
-Image(filename='images/circle_detection.png')   
+Image(filename='figs/circle_detection.png')   
 
 
 # <markdowncell>
@@ -407,10 +386,9 @@ Image(filename='images/circle_detection.png')
 # describe the difference in growth, which is summarized below:
 
 
-
 # <codecell>
 
-Image(filename='images/power_law_growth_regimes.png')   
+Image(filename='figs/power_law_growth_regimes.png')   
 
 
 # <markdowncell>
@@ -438,7 +416,6 @@ Image(filename='images/power_law_growth_regimes.png')
 # our example. Let's grab an image with some circles:
 
 
-
 # <codecell>
 
 image = data.coins()[0:95, 180:370]
@@ -451,10 +428,9 @@ plt.imshow(image);
 # circles:
 
 
-
 # <codecell>
 
-edges = filters.canny(image, sigma=3, low_threshold=10, high_threshold=60)
+edges = feature.canny(image, sigma=3, low_threshold=10, high_threshold=60)
 plt.imshow(edges);   
 
 
@@ -466,7 +442,6 @@ plt.imshow(edges);
 # us much about that.
 # 
 # We'll use the Hough transform to extract circle positions and radii:
-
 
 
 # <codecell>
@@ -485,11 +460,10 @@ hough_response = hough_circle(edges, hough_radii)
 # So... what's the actual result that we get back?
 
 
-
 # <codecell>
 
-print edges.shape,
-print hough_response.shape   
+print(edges.shape)
+print(hough_response.shape)   
 
 
 # <markdowncell>
@@ -499,7 +473,6 @@ print hough_response.shape
 # dimension correspond to?
 # 
 # As always, you can get a better feel for the result by plotting it:
-
 
 
 # <codecell>
@@ -538,7 +511,6 @@ widgets.interact(hough_responses_demo, i=(0, len(hough_response)-1));
 # <fragment>
 # Use the response from the Hough transform to **detect the position and radius
 # of each coin**.
-
 
 
 # <codecell>
@@ -586,10 +558,9 @@ likelihood = []
 # image.org/docs/dev/auto_examples/plot_censure.html):
 
 
-
 # <codecell>
 
-Image(filename='images/censure_example.png')   
+Image(filename='figs/censure_example.png')   
 
 
 # <markdowncell>
@@ -608,16 +579,3 @@ Image(filename='images/censure_example.png')
 # feature detectors/descriptors
 # * [Robust matching using RANSAC](http://scikit-
 # image.org/docs/dev/auto_examples/plot_matching.html)
-
-
-# <markdowncell>
-# ---
-# 
-# <div style="height: 400px;"></div>
-
-
-
-# <codecell>
-
-%reload_ext load_style
-%load_style ../themes/tutorial.css   

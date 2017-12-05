@@ -3,12 +3,6 @@
 
 
 
-
-# <codecell>
-
-%matplotlib inline   
-
-
 # <markdowncell>
 # # Segmentation
 # 
@@ -16,7 +10,7 @@
 # Segmentation is the division of an image into "meaningful" regions. If you've
 # seen The Terminator, you've seen image segmentation:
 # 
-# <img src="../2014-scipy/images/terminator-vision.png" width="700px"/>
+# <img src="figs/terminator-vision.png" width="700px"/>
 # 
 # In `scikit-image`, you can find segmentation functions in the `segmentation`
 # package, with one exception: the `watershed` function is in `morphology`,
@@ -26,9 +20,14 @@
 # them here but you should be aware they exist.
 
 
+# <codecell>
+
+%matplotlib inline   
+
 
 # <codecell>
 
+# IMPORTS
 import numpy as np
 import matplotlib.pyplot as plt
 plt.rcParams['image.interpolation'] = 'none'
@@ -44,13 +43,11 @@ plt.rcParams['image.cmap'] = 'gray'
 # For example, look at the output of the Sobel filter on the coins image:
 
 
-
 # <codecell>
 
 from skimage import data
 from skimage import filters
 from matplotlib import cm   
-
 
 
 # <codecell>
@@ -71,7 +68,6 @@ plt.imshow(edges, cmap='gray');
 # Let's look at a one-dimensional example:
 
 
-
 # <codecell>
 
 from skimage.morphology import watershed
@@ -87,12 +83,10 @@ print("Seeds:", seeds)
 print("Seed positions:", seed_positions)   
 
 
-
 # <codecell>
 
 result = watershed(y, seeds)
 print(result)   
-
 
 
 # <codecell>
@@ -123,7 +117,6 @@ ax.set_ylim(-0.2, 4.1);
 # of a thresholded version of `edges`:
 
 
-
 # <codecell>
 
 threshold = filters.threshold_otsu(edges)
@@ -132,7 +125,6 @@ print(threshold)
 # How far do we have to travel from a non-edge to find an edge?
 non_edges = (edges < threshold)
 plt.imshow(non_edges)   
-
 
 
 # <codecell>
@@ -147,13 +139,11 @@ plt.imshow(distance_from_edge, cmap='viridis');
 # from any edges--which will act as the seeds.
 
 
-
 # <codecell>
 
 from skimage import feature
 peaks = feature.peak_local_max(distance_from_edge, min_distance=10)
 print("Peaks shape:", peaks.shape)   
-
 
 
 # <codecell>
@@ -169,7 +159,6 @@ plt.axis('image')
 
 # <markdowncell>
 # We are now ready to perform the watershed:
-
 
 
 # <codecell>
@@ -191,7 +180,6 @@ plt.imshow(color.label2rgb(ws, coins));
 # graph*, or RAG.
 
 
-
 # <codecell>
 
 from skimage.future import graph   
@@ -200,7 +188,6 @@ from skimage.future import graph
 # <markdowncell>
 # Because *mean boundary agglomeration* won't be available until scikit-image
 # 0.13, we have to *monkey patch* the RAG class to use it.
-
 
 
 # <codecell>
@@ -238,7 +225,6 @@ graph.RAG.merge_nodes = merge_nodes
 # Now we can make a RAG that will be mergeable:
 
 
-
 # <codecell>
 
 g = graph.rag_boundary(ws, edges)   
@@ -250,12 +236,10 @@ g = graph.rag_boundary(ws, edges)
 # the corresponding region:
 
 
-
 # <codecell>
 
 plt.imshow(ws == 45)
 print(g[45])   
-
 
 
 # <codecell>
@@ -270,7 +254,6 @@ print(g[47])
 # now and send us feedback!
 
 
-
 # <codecell>
 
 from skimage.future import graph
@@ -282,7 +265,6 @@ graph.merge_hierarchical?
 # Note that it needs both a merge function and a weight function, which together
 # define how merging nodes affects the graph. In our case, we want any edges to
 # reflect the mean of the pixels at their boundary.
-
 
 
 # <codecell>
@@ -314,7 +296,6 @@ def do_nothing(*args, **kwargs):
 # the other:
 
 
-
 # <codecell>
 
 seg_coins = graph.merge_hierarchical(ws, g, thresh=0.155, rag_copy=True,
@@ -325,7 +306,6 @@ seg_coins = graph.merge_hierarchical(ws, g, thresh=0.155, rag_copy=True,
 
 # <markdowncell>
 # Let's look at the result:
-
 
 
 # <codecell>
@@ -352,9 +332,3 @@ plt.imshow(segmentation.mark_boundaries(coins, seg_coins))
 # - use a different segmentation algorithm from `watershed`, such as
 # `segmentation.felzenszwalb` or `segmentation.slic`, and find its intersection
 # with watershed using `segmentation.join_segmentations`.
-
-
-
-# <codecell>
-
-   

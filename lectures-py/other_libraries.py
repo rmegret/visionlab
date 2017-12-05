@@ -49,7 +49,6 @@
 # compatible with scikit-image's storage of `(row, cols, ch)`.
 
 
-
 # <codecell>
 
 import numpy as np
@@ -93,11 +92,9 @@ score = model.evaluate(X_test, y_test, batch_size=128)
 print('\n\nAccuracy:', score[1])   
 
 
-
 # <codecell>
 
 from sklearn.ensemble import RandomForestClassifier   
-
 
 
 # <codecell>
@@ -105,7 +102,6 @@ from sklearn.ensemble import RandomForestClassifier
 rf = RandomForestClassifier()
 rf.fit(X_train, y_train)
 rf.score(X_test, y_test)   
-
 
 
 # <codecell>
@@ -130,12 +126,10 @@ ax2.plot(X_test[~mask, 0], X_test[~mask, 1], 'r.');
 ax2.set_title('Labels by random forest')   
 
 
-
 # <codecell>
 
 from keras.applications.inception_v3 import InceptionV3, preprocess_input, decode_predictions
 net = InceptionV3()   
-
 
 
 # <codecell>
@@ -160,18 +154,15 @@ def inception_predict(image):
         print(f'{klass:>15} ({prob:.3f})')   
 
 
-
 # <codecell>
 
 from skimage import data, img_as_float
 inception_predict(data.chelsea())   
 
 
-
 # <codecell>
 
 inception_predict(data.camera())   
-
 
 
 # <codecell>
@@ -192,7 +183,6 @@ inception_predict(data.coffee())
 # changer/
 
 
-
 # <codecell>
 
 import numpy as np
@@ -203,12 +193,10 @@ footprint = np.array([[0, 1, 0],
                       [0, 1, 0]], dtype=bool)   
 
 
-
 # <codecell>
 
 from scipy import ndimage as ndi
 %timeit ndi.grey_erosion(image, footprint=footprint)   
-
 
 
 # <codecell>
@@ -216,17 +204,14 @@ from scipy import ndimage as ndi
 %timeit ndi.generic_filter(image, np.min, footprint=footprint)   
 
 
-
 # <codecell>
 
 f'Slowdown is {825 / 2.85} times'   
 
 
-
 # <codecell>
 
 %load_ext Cython   
-
 
 
 # <codecell>
@@ -252,7 +237,6 @@ cdef api int erosion_kernel(double* input_arr_1d, intptr_t filter_size,
     return 1   
 
 
-
 # <codecell>
 
 from scipy import LowLevelCallable, ndimage
@@ -267,7 +251,6 @@ def erosion_fast(image, footprint):
     return out   
 
 
-
 # <codecell>
 
 np.sum(
@@ -278,17 +261,14 @@ np.sum(
 )   
 
 
-
 # <codecell>
 
 %timeit erosion_fast(image, footprint=footprint)   
 
 
-
 # <codecell>
 
 !pip install numba   
-
 
 
 # <codecell>
@@ -313,7 +293,6 @@ def jit_filter_function(filter_function):
     return LowLevelCallable(wrapped.ctypes)   
 
 
-
 # <codecell>
 
 @jit_filter_function
@@ -323,7 +302,6 @@ def fmin(values):
         if v < result:
             result = v
     return result   
-
 
 
 # <codecell>
@@ -346,14 +324,12 @@ def fmin(values):
 # 3. logging and tracing of the execution
 
 
-
 # <codecell>
 
 from sklearn.externals import joblib
 
 from joblib import Memory
 mem = Memory(cachedir='/tmp/joblib')   
-
 
 
 # <codecell>
@@ -365,12 +341,10 @@ def cached_slic(image):
     return segmentation.slic(image)   
 
 
-
 # <codecell>
 
 from skimage import io
 large_image = io.imread('../images/Bells-Beach.jpg')   
-
 
 
 # <codecell>
@@ -378,11 +352,9 @@ large_image = io.imread('../images/Bells-Beach.jpg')
 %time segmentation.slic(large_image)   
 
 
-
 # <codecell>
 
 %time cached_slic(large_image)   
-
 
 
 # <codecell>

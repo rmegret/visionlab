@@ -45,8 +45,9 @@ import skdemo
 import numpy as np
 from matplotlib import pyplot as plt
 
-random_image = np.random.random([50, 50])
+random_image = np.random.random([10,10])
 
+fig = plt.figure(figsize=(3,3))
 plt.imshow(random_image, cmap='gray', interpolation='nearest');
 plt.tight_layout()   
 
@@ -63,7 +64,7 @@ from skimage import data
 coins = data.coins()
 
 print(type(coins), coins.dtype, coins.shape)
-plt.figure()
+fig = plt.figure(figsize=(5,3))
 plt.imshow(coins, cmap='gray', interpolation='nearest');
 plt.tight_layout()   
 
@@ -80,6 +81,7 @@ cat = data.chelsea()
 print("Shape:", cat.shape)
 print("Values min/max:", cat.min(), cat.max())
 
+fig = plt.figure(figsize=(5,3))
 plt.imshow(cat, interpolation='nearest');
 plt.tight_layout()   
 
@@ -95,6 +97,7 @@ plt.tight_layout()
 # <codecell>
 
 cat[10:60, 10:210, :] = [255, 0, 0]  # [red, green, blue]
+fig = plt.figure(figsize=(5,3))
 plt.imshow(cat);   
 
 
@@ -259,13 +262,30 @@ im=ax_gray.imshow(image, cmap='gray'); plt.colorbar(im, ax=im.axes);
 
 # <codecell>
 
-X, Y = np.mgrid[-5:5.1:0.1, -5:5.1:0.1]
+Y, X = np.mgrid[-5:5.1:0.1, -5:5.1:0.1]
 R = np.exp(-(X**2 + Y**2) / 15)
 
 fig, (ax_jet, ax_gray) = plt.subplots(1, 2)
 ax_jet.imshow(R, cmap='jet')
 ax_gray.imshow(R, cmap='gray');
 skdemo.colorbars(); fig.tight_layout()   
+
+
+# <codecell>
+
+RR = np.zeros(R.shape)
+xrange = np.arange(-5,5.1,0.1)
+yrange = np.arange(-5,5.1,0.1)
+X = np.zeros((len(yrange),len(xrange)))
+Y = np.zeros((len(yrange),len(xrange)))
+for j in range(0,X.shape[1]):
+    for i in range(0,X.shape[0]):
+        X[i,j] = xrange[j]
+        Y[i,j] = yrange[i]
+RR = np.exp(-(X**2 + Y**2) / 15)
+
+plt.imshow(RR)
+skdemo.colorbars()   
 
 
 # <markdowncell>
@@ -311,9 +331,11 @@ for i,cmap_name in enumerate(['viridis', 'seismic', 'gray', 'binary']):
 fig, (ax_X, ax_Y, ax_D) = plt.subplots(1, 3,figsize=(8,3))
 ax_X.imshow(X, cmap='seismic'); ax_X.set_title('X')
 ax_Y.imshow(Y, cmap='seismic'); ax_Y.set_title('Y')
-ax_D.imshow((X**2+Y**2), cmap='viridis'); ax_D.set_title('X**2+Y**2')
+ax_D.imshow(np.sqrt(X**2+Y**2), cmap='viridis'); ax_D.set_title('X**2+Y**2')
 skdemo.colorbars()
-fig.tight_layout()   
+fig.tight_layout()
+from math import sqrt
+5*sqrt(2)   
 
 
 # <markdowncell>
@@ -595,8 +617,9 @@ def draw_H(image, coords, color=(0, 255, 0), in_place=False):
     else:
         out = image.copy()
     
-    # your code goes here
-    
+    out[50:74,200:203,:]=[255,0,0]    
+    out[50:74,217:220,:]=[255,0,0]  
+    out[60:63,200:220,:]=[255,0,0]  
     return out   
 
 
@@ -624,27 +647,27 @@ plt.imshow(cat_H);
 
 def plot_intensity(image, row):
     # Fill in the three lines below
-    red_values = 0   # TODO
-    green_values = 0 # TODO
-    blue_values = 0  # TODO
+    red_values = image[row,:,0]   # TODO
+    green_values = image[row,:,1] # TODO
+    blue_values = image[row,:,2]  # TODO
     
     plt.figure()
-    plt.plot(red_values)
-    plt.plot(green_values)
-    plt.plot(blue_values)
+    plt.plot(red_values, '.-r')
+    plt.plot(green_values, '.-g')
+    plt.plot(blue_values, '.-b')
+    #plt.legend(['red','green','blue'])
     
-    pass   
-
-
-# <markdowncell>
-# <fragment>
-# Test your function here:
-
-
-# <codecell>
+    pass
 
 # TODO:
-#plot_intensity(cat, 50)
+row=5
+
+random_image = np.random.random([10,10,3])
+
+plt.imshow(random_image)
+plt.plot([0,random_image.shape[1]],[row,row],'r')
+
+plot_intensity(random_image, row)
 #plot_intensity(cat, 100)   
 
 
@@ -672,16 +695,18 @@ def plot_intensity(image, row):
 def myrgb2gray(image):
     # Write code to convert RGB to gray
 
-    gray = image[:,:,0] # TODO: replace this by the real gray value
+    #gray = image[:,:,0]*0.2126 + image[:,:,1]*0.7152 + image[:,:,2]*0.0722 # TODO: replace this by the real gray value
+    gray = image[:,:,0:3] @ [0.2126,0.7152,0.0722]
     
     return gray
 
 fig, axes = plt.subplots(1,3,figsize=(10,3))
 axes[0].imshow(balloon)
-axes[1].imshow(myrgb2gray(balloon))
-axes[2].imshow(skimage.color.rgb2gray(balloon))   
+axes[1].imshow(myrgb2gray(balloon.astype(float)/255))
+axes[2].imshow(skimage.color.rgb2gray(balloon))
+skdemo.colorbars()   
 
 
 # <codecell>
 
-   
+balloon.astype(float)/255   

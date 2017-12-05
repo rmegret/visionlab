@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -27,7 +26,6 @@ from __future__ import division, print_function
 # 
 # Import NumPy and matplotlib, then define a utility function to compare
 # multiple images
-
 
 
 # <codecell>
@@ -72,7 +70,6 @@ def compare(*images, **kwargs):
 # share similar names.
 
 
-
 # <codecell>
 
 from skimage import io
@@ -83,7 +80,6 @@ pano_imgs = io.ImageCollection('../images/pano/JDW_03*')
 # <markdowncell>
 # Inspect these images using the convenience function `compare()` defined
 # earlier
-
 
 
 # <codecell>
@@ -114,7 +110,6 @@ pano_imgs = io.ImageCollection('../images/pano/JDW_03*')
 # grayscale with `skimage.color.rgb2gray` is appropriate.
 
 
-
 # <codecell>
 
 from skimage.color import rgb2gray
@@ -122,7 +117,6 @@ from skimage.color import rgb2gray
 # Make grayscale versions of the three color images in pano_imgs
 # named pano0, pano1, and pano2
    
-
 
 
 # <codecell>
@@ -158,7 +152,6 @@ from skimage.color import rgb2gray
 # generate additional keypoints.
 
 
-
 # <codecell>
 
 from skimage.feature import ORB
@@ -181,7 +174,6 @@ descriptors0 = orb.descriptors
 # Match features from images 0 <-> 1 and 1 <-> 2.
 
 
-
 # <codecell>
 
 from skimage.feature import match_descriptors
@@ -194,7 +186,6 @@ matches12 = match_descriptors(descriptors1, descriptors2, cross_check=True)
 # <markdowncell>
 # Inspect these matched features side-by-side using the convenience function
 # ``skimage.feature.plot_matches``.
-
 
 
 # <codecell>
@@ -211,7 +202,6 @@ ax.axis('off');
 # <markdowncell>
 # Most of these line up similarly, but it isn't perfect. There are a number of
 # obvious outliers or false matches.
-
 
 
 # <codecell>
@@ -243,7 +233,6 @@ ax.axis('off');
 # right -> center.
 
 
-
 # <codecell>
 
 from skimage.transform import ProjectiveTransform
@@ -273,13 +262,11 @@ model_robust12, inliers12 = ransac((src, dst), ProjectiveTransform,
 # they look?
 
 
-
 # <codecell>
 
 # Use plot_matches as before, but select only good matches with fancy indexing
 # e.g., matches01[inliers01]
    
-
 
 
 # <codecell>
@@ -304,7 +291,6 @@ model_robust12, inliers12 = ransac((src, dst), ProjectiveTransform,
 # ### Extent of output image
 # The first step is to find the shape of the output image to contain all three
 # transformed images. To do this we consider the extents of all warped images.
-
 
 
 # <codecell>
@@ -351,7 +337,6 @@ output_shape = np.ceil(output_shape[::-1]).astype(int)
 # **Note:** ``warp`` takes the _inverse_ mapping as an input.
 
 
-
 # <codecell>
 
 from skimage.transform import warp
@@ -372,7 +357,6 @@ pano1_warped[~pano1_mask] = 0      # Return background values to 0
 # Warp left panel into place
 
 
-
 # <codecell>
 
 # Warp pano0 to pano1
@@ -388,7 +372,6 @@ pano0_warped[~pano0_mask] = 0      # Return background values to 0
 # Warp right panel into place
 
 
-
 # <codecell>
 
 # Warp pano2 to pano1
@@ -402,7 +385,6 @@ pano2_warped[~pano2_mask] = 0      # Return background values to 0
 
 # <markdowncell>
 # Inspect the warped images:
-
 
 
 # <codecell>
@@ -424,7 +406,6 @@ compare(pano0_warped, pano1_warped, pano2_warped, figsize=(12, 10));
 # 3. normalizes the result.
 
 
-
 # <codecell>
 
 # Add the three warped images together. This could create dtype overflows!
@@ -433,13 +414,11 @@ merged =  ## Sum warped images
    
 
 
-
 # <codecell>
 
 # Track the overlap by adding the masks together
 overlap =  ## Sum masks
    
-
 
 
 # <codecell>
@@ -451,7 +430,6 @@ normalized = merged /   ## Divisor here
 
 # <markdowncell>
 # Finally, view the results!
-
 
 
 # <codecell>
@@ -498,7 +476,6 @@ ax.axis('off');
 # 
 # Take a look at a _difference image_, which is just one image subtracted from
 # the other.
-
 
 
 # <codecell>
@@ -555,7 +532,6 @@ ax.axis('off');
 # ### Define seed points
 
 
-
 # <codecell>
 
 ymax = output_shape[1] - 1
@@ -578,7 +554,6 @@ mask_pts12 = [[0,    2*ymax // 3],
 # 
 # We will visually explore the results shortly. Examine the code later - for
 # now, just use it.
-
 
 
 # <codecell>
@@ -655,7 +630,6 @@ def generate_costs(diff_image, mask, vertical=True, gradient_cutoff=2.):
 # Use this function to generate the cost array.
 
 
-
 # <codecell>
 
 # Start with the absolute value of the difference image.
@@ -669,7 +643,6 @@ costs01 = generate_costs(np.abs(pano0_warped - pano1_warped),
 # position by setting top and bottom edges to zero cost.
 
 
-
 # <codecell>
 
 # Set top and bottom edges to zero in `costs01`
@@ -680,7 +653,6 @@ costs01[-1, :] = 0
 
 # <markdowncell>
 # Our cost array now looks like this
-
 
 
 # <codecell>
@@ -704,7 +676,6 @@ ax.axis('off');
 # cost array
 
 
-
 # <codecell>
 
 from skimage.graph import route_through_array
@@ -722,7 +693,6 @@ pts = np.array(pts)
 
 # <markdowncell>
 # Did it work?
-
 
 
 # <codecell>
@@ -768,7 +738,6 @@ ax.axis('off');
 # Place the path into a new, empty array.
 
 
-
 # <codecell>
 
 # Start with an array of zeros and place the path
@@ -778,7 +747,6 @@ mask0[pts[:, 0], pts[:, 1]] = 1
 
 # <markdowncell>
 # Ensure the path appears as expected
-
 
 
 # <codecell>
@@ -796,7 +764,6 @@ ax.axis('off');
 # `skimage.measure.label`
 
 
-
 # <codecell>
 
 from skimage.measure import label
@@ -812,7 +779,6 @@ plt.imshow(mask0, cmap='gray');
 # Looks great!
 # 
 # Apply the same principles to images 1 and 2: first, build the cost array
-
 
 
 # <codecell>
@@ -833,7 +799,6 @@ costs12[-1, :] = 0
 # prior one!
 
 
-
 # <codecell>
 
 costs12[mask0 > 0] = 1   
@@ -841,7 +806,6 @@ costs12[mask0 > 0] = 1
 
 # <markdowncell>
 # Check the result
-
 
 
 # <codecell>
@@ -854,7 +818,6 @@ ax.imshow(costs12, cmap='gray');
 # Your results may look slightly different.
 # 
 # Compute the minimal cost path
-
 
 
 # <codecell>
@@ -874,7 +837,6 @@ pts = np.array(pts)
 # Verify a reasonable result
 
 
-
 # <codecell>
 
 fig, ax = plt.subplots(figsize=(12, 12))
@@ -892,7 +854,6 @@ ax.axis('off');
 # Initialize the mask by placing the path in a new array
 
 
-
 # <codecell>
 
 mask2 = np.zeros_like(pano0_warped, dtype=np.uint8)
@@ -902,7 +863,6 @@ mask2[pts[:, 0], pts[:, 1]] = 1
 # <markdowncell>
 # Fill the right side this time, again using `skimage.measure.label` - the label
 # of interest is 3
-
 
 
 # <codecell>
@@ -920,7 +880,6 @@ plt.imshow(mask2, cmap='gray');
 # everywhere `mask0` and `mask2` are not.
 
 
-
 # <codecell>
 
 mask1 = ~(mask0 | mask2).astype(bool)   
@@ -928,7 +887,6 @@ mask1 = ~(mask0 | mask2).astype(bool)
 
 # <markdowncell>
 # Define a convenience function to place masks in alpha channels
-
 
 
 # <codecell>
@@ -959,7 +917,6 @@ def add_alpha(img, mask=None):
 # Obtain final, alpha blended individual images and inspect them
 
 
-
 # <codecell>
 
 pano0_final = add_alpha(pano0_warped, mask0)
@@ -974,7 +931,6 @@ compare(pano0_final, pano1_final, pano2_final, figsize=(15, 15))
 # puzzle...
 # 
 # Plot all three together and view the results!
-
 
 
 # <codecell>
@@ -1008,7 +964,6 @@ ax.axis('off');
 # Transform the colored images
 
 
-
 # <codecell>
 
 # Identical transforms as before, except
@@ -1028,7 +983,6 @@ pano2_color = warp(pano_imgs[2], (model_robust12 + offset1).inverse, order=3,
 # Apply the custom alpha channel masks
 
 
-
 # <codecell>
 
 pano0_final = add_alpha(pano0_color, mask0)
@@ -1038,7 +992,6 @@ pano2_final = add_alpha(pano2_color, mask2)
 
 # <markdowncell>
 # View the result!
-
 
 
 # <codecell>
@@ -1056,7 +1009,6 @@ ax.axis('off');
 
 # <markdowncell>
 # Save the combined, color panorama locally as `'./pano-advanced-output.png'`
-
 
 
 # <codecell>
@@ -1106,7 +1058,6 @@ io.imsave('./pano-advanced-output.png', pano_combined)
 # ---
 # 
 # <div style="height: 400px;"></div>
-
 
 
 # <codecell>

@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -59,11 +58,9 @@ import matplotlib.pyplot as plt
 # Let us start with an example, using the **digits dataset** from scikit-learn.
 
 
-
 # <codecell>
 
 from sklearn import datasets   
-
 
 
 # <codecell>
@@ -77,7 +74,6 @@ print(digits)
 # metadata about the data. This data is stored in the ``.data`` member, which is
 # a ``n_samples, n_features`` array. Response variables (if available, as here)
 # are stored in the ``.target member.``
-
 
 
 # <codecell>
@@ -94,12 +90,10 @@ print(digits.target.shape)
 # array** of features, which sometimes require reshaping data.
 
 
-
 # <codecell>
 
 print(digits.images.shape)
 np.all(digits.data[0].reshape((8, 8)) == digits.images[0])   
-
 
 
 # <codecell>
@@ -119,7 +113,6 @@ print("target: ", digits.target[0])
 # learn. An estimator is created by initializing an estimator object:
 
 
-
 # <codecell>
 
 from sklearn import svm
@@ -130,7 +123,6 @@ clf = svm.SVC(gamma=0.001, C=100.)
 # The estimator is trained from the learning set using its ``.fit`` method.
 
 
-
 # <codecell>
 
 clf.fit(digits.data[:-10], digits.target[:-10])   
@@ -139,7 +131,6 @@ clf.fit(digits.data[:-10], digits.target[:-10])
 # <markdowncell>
 # Then the target value of new data is predicted using the ``.predict`` method
 # of the estimator.
-
 
 
 # <codecell>
@@ -187,12 +178,10 @@ axes[1].imshow(digits.images[-1], cmap='gray')
 # single feature, which is their grayscale value.
 
 
-
 # <codecell>
 
 from skimage import data, exposure, filters
 camera = data.camera()   
-
 
 
 # <codecell>
@@ -200,11 +189,9 @@ camera = data.camera()
 hi = exposure.histogram(camera)   
 
 
-
 # <codecell>
 
 val = filters.threshold_otsu(camera)   
-
 
 
 # <codecell>
@@ -225,7 +212,6 @@ axes[1].axvline(val, ls='--')
 # dataset of ``scikit-learn``. Note that the ``KMeans`` estimator
 # uses a similar API as the SVC we used for digits classification, with the .fit
 # method.
-
 
 
 # <codecell>
@@ -267,12 +253,10 @@ ax.set_zlabel('Petal length')
 # color channels (a and b) for clustering.
 
 
-
 # <codecell>
 
 from skimage import io, color
 im = io.imread('../images/round_pill.jpg')   
-
 
 
 # <codecell>
@@ -285,13 +269,11 @@ data = np.array([im_lab[..., 1].ravel(), im_lab[..., 2].ravel()])
 # Then we create a ``KMeans`` estimator for two clusters.
 
 
-
 # <codecell>
 
 from sklearn.cluster import KMeans
 kmeans = KMeans(n_clusters=2, random_state=0).fit(data.T)
 segmentation = kmeans.labels_.reshape(im.shape[:-1])   
-
 
 
 # <codecell>
@@ -304,7 +286,6 @@ plt.contour(segmentation, colors='y')
 # Of course we can generalize this method to more than two clusters.
 
 
-
 # <codecell>
 
 im = io.imread('../images/chapel_floor.png')
@@ -315,7 +296,6 @@ data = np.array([im_lab[..., 0].ravel(),
 
 kmeans = KMeans(n_clusters=4, random_state=0).fit(data.T)
 segmentation = kmeans.labels_.reshape(im.shape[:-1])   
-
 
 
 # <codecell>
@@ -333,7 +313,6 @@ axes[1].axis('off')
 # 
 # For the chapel floor image, cluster the image in 3 clusters, using only the
 # color channels (not the lightness one). What happens?
-
 
 
 # <codecell>
@@ -365,7 +344,6 @@ axes[1].axis('off')
 # similar in color will end up in the same segment.
 
 
-
 # <codecell>
 
 spices = io.imread('../images/spices.jpg')
@@ -378,7 +356,6 @@ plt.imshow(spices)
 # and shades.
 
 
-
 # <codecell>
 
 im_lab = color.rgb2lab(spices)
@@ -389,7 +366,6 @@ kmeans = KMeans(n_clusters=10, random_state=0).fit(data.T)
 labels = kmeans.labels_.reshape(spices.shape[:-1])
 color_mean = color.label2rgb(labels, spices, kind='mean')
 plt.imshow(color_mean)   
-
 
 
 # <codecell>
@@ -405,18 +381,15 @@ plt.imshow(segmentation.mark_boundaries(spices, labels))
 # importance of the distance in image- and color-space.
 
 
-
 # <codecell>
 
 from skimage import segmentation
 segments = segmentation.slic(spices, n_segments=200, compactness=20)   
 
 
-
 # <codecell>
 
 plt.imshow(segmentation.mark_boundaries(spices, segments))   
-
 
 
 # <codecell>
@@ -429,7 +402,6 @@ plt.imshow(result)
 # After the super-pixel segmentation (which is also called oversegmentation,
 # because we end up with more segments that we want to), we can add a second
 # clustering step to join superpixels belonging to the same spice heap.
-
 
 
 # <codecell>
@@ -449,12 +421,10 @@ plt.imshow(segmentation.mark_boundaries(spices, labels))
 # segmentation.
 
 
-
 # <codecell>
 
 result = segmentation.felzenszwalb(spices, scale=100)
 plt.imshow(color.label2rgb(result, spices, kind='mean'))   
-
 
 
 # <codecell>
@@ -472,12 +442,10 @@ plt.imshow(segmentation.mark_boundaries(spices, result))
 # - KMeans: n_clusters (start with 8 for example)
 
 
-
 # <codecell>
 
 from skimage import data
 astro = data.astronaut()   
-
 
 
 # <codecell>
@@ -497,12 +465,6 @@ ax[1].imshow(color_mean)
 ax[1].axis('off')   
 
 
-
-# <codecell>
-
-   
-
-
 # <markdowncell>
 # ## Increasing the number of low-level features: trained segmentation using
 # Gabor filters and random forests
@@ -512,7 +474,6 @@ ax[1].axis('off')
 # possible to use other features, such as the local texture. Texture features
 # can be obtained using Gabor filters, which are Gaussian kernels modulated by a
 # sinusoidal wave.
-
 
 
 # <codecell>
@@ -589,7 +550,6 @@ for label, (kernel, powers), ax_row in zip(kernel_params, results, axes[1:]):
 # when we don't know if all features are relevant.
 
 
-
 # <codecell>
 
 from sklearn.ensemble import RandomForestClassifier
@@ -644,12 +604,10 @@ def trainable_segmentation(im, mask):
     return result   
 
 
-
 # <codecell>
 
 # Image from https://fr.wikipedia.org/wiki/Fichier:Bells-Beach-View.jpg
 beach = io.imread('../images/Bells-Beach.jpg')   
-
 
 
 # <codecell>
@@ -663,7 +621,6 @@ plt.imshow(beach)
 plt.contour(mask, colors='y')   
 
 
-
 # <codecell>
 
 result = trainable_segmentation(beach, mask)
@@ -674,7 +631,6 @@ plt.imshow(color.label2rgb(result, beach, kind='mean'))
 # ## Using mid-level features
 # 
 # 
-
 
 
 # <codecell>
@@ -700,17 +656,14 @@ plt.ylim(512, 0)
 # Represent the ORB keypoint of the camera-man
 
 
-
 # <codecell>
 
 orb = feature.ORB(n_keypoints=400, fast_threshold=0.02)   
 
 
-
 # <codecell>
 
 orb.detect_and_extract(camera)   
-
 
 
 # <codecell>
@@ -739,7 +692,6 @@ plt.ylim(512, 0)
 # instead of classifying.
 
 
-
 # <codecell>
 
 from skimage import measure
@@ -754,7 +706,6 @@ data = np.array([(prop.area,
                   prop.solidity) for prop in props])   
 
 
-
 # <codecell>
 
 plt.imshow(labels, cmap='spectral')   
@@ -763,7 +714,6 @@ plt.imshow(labels, cmap='spectral')
 # <markdowncell>
 # Once again we use the KMeans algorithm to cluster the objects. We visualize
 # the result as an array of labels.
-
 
 
 # <codecell>
@@ -791,7 +741,6 @@ plt.imshow(object_clusters, cmap='spectral')
 # ones. To correct this effect, we can normalize the area to its maximal value.
 
 
-
 # <codecell>
 
 data[:, 0] /= data[:, 0].max()
@@ -807,7 +756,6 @@ plt.imshow(object_clusters, cmap='spectral')
 # A better way to do the rescaling is to use of the scaling methods provided by
 # ``sklearn.preprocessing``. The ``StandardScaler`` makes sure that every
 # feature has a zero mean and a unit standard deviation.
-
 
 
 # <codecell>
@@ -831,14 +779,12 @@ plt.imshow(object_clusters, cmap='spectral')
 # compact and convoluted particles, regardless of their size.
 
 
-
 # <codecell>
 
 # Your solution goes here
 data = np.array([(prop.eccentricity,
                   prop.perimeter**2/prop.area,
                   prop.solidity) for prop in props])   
-
 
 
 # <codecell>
@@ -852,10 +798,4 @@ clf.fit(data_scaled)
 
 object_clusters = reshape_cluster_labels(clf.labels_, labels)
 plt.imshow(object_clusters, cmap='spectral')
-   
-
-
-
-# <codecell>
-
    

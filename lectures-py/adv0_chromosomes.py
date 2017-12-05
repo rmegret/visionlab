@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -23,7 +22,6 @@ from __future__ import division, print_function
 # chromosomes a struggle.
 
 
-
 # <codecell>
 
 import numpy as np
@@ -31,7 +29,6 @@ from matplotlib import cm, pyplot as plt
 import skdemo
 plt.rcParams['image.cmap'] = 'cubehelix'
 plt.rcParams['image.interpolation'] = 'none'   
-
 
 
 # <codecell>
@@ -45,7 +42,6 @@ skdemo.imshow_with_histogram(image);
 # Let's separate the channels so we can work on each individually.
 
 
-
 # <codecell>
 
 protein, centromeres, chromosomes = image.transpose((2, 0, 1))   
@@ -53,7 +49,6 @@ protein, centromeres, chromosomes = image.transpose((2, 0, 1))
 
 # <markdowncell>
 # Getting the centromeres is easy because the signal is so clean:
-
 
 
 # <codecell>
@@ -67,7 +62,6 @@ skdemo.imshow_all(centromeres, centromeres_binary)
 # But getting the chromosomes is not so easy:
 
 
-
 # <codecell>
 
 chromosomes_binary = chromosomes > threshold_otsu(chromosomes)
@@ -76,7 +70,6 @@ skdemo.imshow_all(chromosomes, chromosomes_binary, cmap='gray')
 
 # <markdowncell>
 # Let's try using an adaptive threshold:
-
 
 
 # <codecell>
@@ -98,17 +91,10 @@ skdemo.imshow_all(chromosomes, chromosomes_adapt)
 # pi/skimage.morphology.html#skimage.morphology.remove_small_objects))
 
 
-
-# <codecell>
-
-   
-
-
 # <markdowncell>
 # Now that we have the centromeres and the chromosomes, it's time to do the
 # science: get the distribution of intensities in the red channel using both
 # centromere and chromosome locations.
-
 
 
 # <codecell>
@@ -133,7 +119,6 @@ plt.show()
 # ---
 # 
 # <div style="height: 400px;"></div>
-
 
 
 # <codecell>

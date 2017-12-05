@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -49,7 +48,6 @@ from __future__ import division, print_function
 # 
 
 
-
 # <codecell>
 
 import matplotlib.pyplot as plt
@@ -57,7 +55,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from skimage import io, img_as_float   
-
 
 
 # <codecell>
@@ -69,7 +66,6 @@ microarray = img_as_float(microarray)
 
 plt.figure(figsize=(10, 5))
 plt.imshow(microarray[:500, :1000], cmap='gray', interpolation='nearest');   
-
 
 
 # <codecell>
@@ -91,14 +87,12 @@ ax1.imshow(red_rgb, interpolation='nearest')
 plt.suptitle('\n\nPseudocolor plots of red and green channels', fontsize=16);   
 
 
-
 # <codecell>
 
 from skimage import filter as filters
 
 mask = (green > 0.1)
 plt.imshow(mask[:1000, :1000], cmap='gray');   
-
 
 
 # <codecell>
@@ -116,13 +110,11 @@ plt.imshow(z[:500, :500], cmap=plt.cm.gray, vmin=0, vmax=2);
 # ### Locating the grid
 
 
-
 # <codecell>
 
 both = (green + red)
 
 plt.imshow(both, cmap='gray');   
-
 
 
 # <codecell>
@@ -160,7 +152,6 @@ ax1.set_xlim(0, 200)
 ax0.set_title('Row gaps');   
 
 
-
 # <codecell>
 
 P, Q = 500, 500
@@ -175,7 +166,6 @@ for j in dips_columns[dips_columns < Q]:
     plt.plot([j, j], [0, P], 'm')
 
 plt.axis('image');   
-
 
 
 # <codecell>
@@ -200,7 +190,6 @@ for i in range(M - 1):
         out[row0:row1, col0:col1] = mean_ratio   
 
 
-
 # <codecell>
 
 f, (ax0, ax1) = plt.subplots(1, 2, figsize=(15, 10))
@@ -214,7 +203,6 @@ ax1.grid(color='magenta', linewidth=1)
 
 # <markdowncell>
 # ### Transform the intensity to spot outliers
-
 
 
 # <codecell>
@@ -232,7 +220,6 @@ ax1.grid(color='magenta', linewidth=1)
 # ---
 # 
 # <div style="height: 400px;"></div>
-
 
 
 # <codecell>

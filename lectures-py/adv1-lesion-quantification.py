@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -25,7 +24,6 @@ from __future__ import division, print_function
 # - estimating the average fluorescence along the length of the cord
 
 
-
 # <codecell>
 
 from matplotlib import pyplot as plt, cm
@@ -38,7 +36,6 @@ image = io.imread('../images/zebrafish-spinal-cord.png')
 # 
 # First, we get just the top and bottom rows of pixels, and use a 1D gaussian
 # filter to smooth the signal.
-
 
 
 # <codecell>
@@ -64,7 +61,6 @@ ax1.set_title('bottom')
 # of the signal.
 
 
-
 # <codecell>
 
 top_mode = top_smooth.argmax()
@@ -87,7 +83,6 @@ print(top_mode, top_width, bottom_mode, bottom_width)
 # `bottom_mode`).
 
 
-
 # <codecell>
 
 from skimage import measure
@@ -96,7 +91,6 @@ trace = measure.profile_line(None) # Replace `None` with correct args
 
 # <markdowncell>
 # Finally, plot the trace.
-
 
 
 # <codecell>
@@ -115,7 +109,6 @@ plt.ylabel('mean fluorescence intensity')
 # ---
 # 
 # <div style="height: 400px;"></div>
-
 
 
 # <codecell>

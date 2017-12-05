@@ -3,7 +3,6 @@
 
 
 
-
 # <codecell>
 
 from __future__ import division, print_function
@@ -12,7 +11,6 @@ from __future__ import division, print_function
 
 # <markdowncell>
 # # Color and exposure
-
 
 
 # <codecell>
@@ -28,7 +26,6 @@ import numpy as np
 # <markdowncell>
 # Create three images; each should display a red, green, or blue channel of the
 # original image.
-
 
 
 # <codecell>
@@ -53,7 +50,6 @@ skdemo.imshow_all(red_image, green_image, blue_image)
 # channels using `np.rollaxis`
 
 
-
 # <codecell>
 
 np.rollaxis(color_image, axis=-1).shape   
@@ -62,7 +58,6 @@ np.rollaxis(color_image, axis=-1).shape
 # <markdowncell>
 # The `axis` argument tells `rollaxis` which axis to... ahem... roll to the
 # front.
-
 
 
 # <codecell>
@@ -101,7 +96,6 @@ skdemo.imshow_all(red_image, green_image, blue_image)
 # As the error suggests, a 3D, color image will not work with a histogram
 
 
-
 # <codecell>
 
 
@@ -111,7 +105,6 @@ plt.hist(color_image.flatten());
 # <markdowncell>
 # These bins are really coarse, so lets use the `bins` argument to `plt.hist` to
 # get a better result:
-
 
 
 # <codecell>
@@ -128,7 +121,6 @@ plt.hist(color_image.flatten(), bins=100);
 # unique bins:
 
 
-
 # <codecell>
 
 np.ptp(color_image)   
@@ -140,7 +132,6 @@ np.ptp(color_image)
 # looking histogram. If we use a bit fewer bins, then some bins will have 3
 # integers instead of 2; if go a bit higher, then some bins will have a bit
 # fewer integers.
-
 
 
 # <codecell>
@@ -161,7 +152,6 @@ for ax, bins in zip(axes, (100, 115, 130)):
 # plot.
 
 
-
 # <codecell>
 
 for color, channel in zip('rgb', np.rollaxis(color_image, axis=-1)):
@@ -173,12 +163,10 @@ for color, channel in zip('rgb', np.rollaxis(color_image, axis=-1)):
 # combination with `histogram` from `skimage.exposure`.
 
 
-
 # <codecell>
 
 from skimage import exposure
 exposure.histogram?   
-
 
 
 # <codecell>
@@ -203,13 +191,11 @@ for color, channel in zip('rgb', np.rollaxis(color_image, axis=-1)):
 # Bonus: **Isolate the nose** too.
 
 
-
 # <codecell>
 
 from skimage import color
 
 lab_image = color.rgb2lab(color_image)   
-
 
 
 # <codecell>
@@ -225,7 +211,6 @@ skdemo.imshow_all(luminance, a, b, titles=titles)
 # just guess values for thresholding; instead, let's look at a histogram:
 
 
-
 # <codecell>
 
 skdemo.imshow_with_histogram(lab_image);   
@@ -239,7 +224,6 @@ skdemo.imshow_with_histogram(lab_image);
 # tail of the green histogram---roughly at 0:
 
 
-
 # <codecell>
 
 plt.imshow(a < 0)   
@@ -250,7 +234,6 @@ plt.imshow(a < 0)
 # grab the right tail of the green histogram (> 30).
 
 
-
 # <codecell>
 
 plt.imshow(a > 30)   
@@ -259,7 +242,6 @@ plt.imshow(a > 30)
 # <markdowncell>
 # Combining those two, plus an extra bit of thresholding to blacken the pupil,
 # gives:
-
 
 
 # <codecell>
@@ -279,7 +261,6 @@ plt.imshow(eyes | nose)
 # # Image filtering
 
 
-
 # <codecell>
 
 # Replicate image from demo
@@ -290,7 +271,6 @@ pixelated = image[::10, ::10]
 # <markdowncell>
 # In the image filtering section, our first attempt at applying a difference
 # filter didn't produce good results
-
 
 
 # <codecell>
@@ -304,7 +284,6 @@ skdemo.imshow_all(horizontal_edges, vertical_edges)
 # The reason for the noise is that these images are unsigned, 8-bit integers:
 
 
-
 # <codecell>
 
 print pixelated.dtype, horizontal_edges.dtype, vertical_edges.dtype   
@@ -316,7 +295,6 @@ print pixelated.dtype, horizontal_edges.dtype, vertical_edges.dtype
 # will wrap around (overflow) so that 256 becomes -1.
 # 
 # To fix this, we'll convert to floating-point images:
-
 
 
 # <codecell>
@@ -339,7 +317,6 @@ skdemo.imshow_all(horizontal_edges, vertical_edges)
 # use convolution.)
 
 
-
 # <codecell>
 
 def imshow_edges(image, horizontal_edge_kernel, vertical_edge_kernel):
@@ -351,7 +328,6 @@ def imshow_edges(image, horizontal_edge_kernel, vertical_edge_kernel):
 # <markdowncell>
 # We can emulate the simple differencing operation that we did earlier with the
 # following edge kernels:
-
 
 
 # <codecell>
@@ -373,7 +349,6 @@ imshow_edges(image, horizontal_edge_kernel, vertical_edge_kernel)
 # centered on each pixel:
 
 
-
 # <codecell>
 
 horizontal_edge_kernel = np.array([[1], [0], [-1]])
@@ -385,7 +360,6 @@ imshow_edges(image, horizontal_edge_kernel, vertical_edge_kernel)
 # <markdowncell>
 # We can verify that this doesn't skew the edges by looking at the bright square
 # from earlier
-
 
 
 # <codecell>
@@ -425,7 +399,6 @@ skdemo.imshow_all(horizontal_edges, vertical_edges)
 # documentation:
 
 
-
 # <codecell>
 
 from skimage import filter
@@ -441,13 +414,11 @@ dx_kernel = np.array([
 dy_kernel = np.rot90(dx_kernel)   
 
 
-
 # <codecell>
 
 image_45 = np.tril(-np.ones([7, 7]))
 image_135 = np.rot90(image_45)
 skdemo.imshow_all(image_45, image_135)   
-
 
 
 # <codecell>
@@ -461,12 +432,10 @@ def angle_image(image):
     return np.degrees(angle)   
 
 
-
 # <codecell>
 
 %precision 0
 angle_image(image_45)   
-
 
 
 # <codecell>
@@ -491,7 +460,6 @@ angle_image(image_135)
 # First, let's replicate the data from the tutorial
 
 
-
 # <codecell>
 
 from skimage.transform import hough_circle
@@ -500,7 +468,6 @@ image = data.coins()[0:95, 180:370]
 edges = filter.canny(image, sigma=3, low_threshold=10, high_threshold=60)
 hough_radii = np.arange(15, 30, 2)
 hough_response = hough_circle(edges, hough_radii)   
-
 
 
 # <codecell>
@@ -521,11 +488,9 @@ for i in np.argsort(likelihood)[-3:]:
     plt.imshow(image)   
 
 
-
 # <codecell>
 
 coin_centers   
-
 
 
 # <codecell>
@@ -534,11 +499,9 @@ a = np.arange(10)
 a[np.arange(3)]   
 
 
-
 # <codecell>
 
 centers   
-
 
 
 # <codecell>
@@ -555,7 +518,6 @@ for h, r in zip(hough_response, hough_radii):
     likelihood.extend(h[peaks[:, 0], peaks[:, 1]])   
 
 
-
 # <codecell>
 
 from skimage.draw import circle_perimeter
@@ -570,13 +532,6 @@ for i in np.argsort(likelihood)[-3:]:
     plt.plot(column, row, 'ro')   
 
 
-
 # <codecell>
 
 circle_perimeter?   
-
-
-
-# <codecell>
-
-   

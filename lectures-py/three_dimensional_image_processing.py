@@ -3,11 +3,9 @@
 
 
 
-
 # <codecell>
 
 %matplotlib inline   
-
 
 
 # <codecell>
@@ -57,7 +55,6 @@ from skimage import exposure, feature, filters, io, measure, morphology, restora
 # reduce computational time.
 
 
-
 # <codecell>
 
 data = io.imread("../images/cells.tif")
@@ -72,7 +69,6 @@ print("range: ({}, {})".format(data.min(), data.max()))
 # cells. This `spacing` information will be used to adjust contributions to
 # filters and helps decide when to apply operations planewise. We've chosen to
 # normalize it to `1.0` in the `row` and `column` dimensions.
-
 
 
 # <codecell>
@@ -90,7 +86,6 @@ print("spacing: {}".format(spacing))
 # Try visualizing the image with `skimage.io.imshow`...
 
 
-
 # <codecell>
 
 try:
@@ -105,7 +100,6 @@ except TypeError as e:
 # observe three different views of the image.
 
 
-
 # <codecell>
 
 def show_plane(ax, plane, cmap="gray", title=None):
@@ -115,7 +109,6 @@ def show_plane(ax, plane, cmap="gray", title=None):
     
     if title:
         ax.set_title(title)   
-
 
 
 # <codecell>
@@ -133,7 +126,6 @@ show_plane(c, data[:, :, 128], title="Column = 128")
 # image. By default, every other plane is displayed.
 
 
-
 # <codecell>
 
 def display(im3d, cmap="gray", step=2):
@@ -146,7 +138,6 @@ def display(im3d, cmap="gray", step=2):
         ax.imshow(image, cmap=cmap, vmin=vmin, vmax=vmax)
         ax.set_xticks([])
         ax.set_yticks([])   
-
 
 
 # <codecell>
@@ -169,7 +160,6 @@ display(data)
 # an image, while a `gamma > 1` will darken an image.
 
 
-
 # <codecell>
 
 # Helper function for plotting histograms.
@@ -179,7 +169,6 @@ def plot_hist(ax, data, title=None):
     
     if title:
         ax.set_title(title)   
-
 
 
 # <codecell>
@@ -206,7 +195,6 @@ plot_hist(f, gamma_high)
 # improves contrast in an image by redistributing pixel intensities. The most
 # common pixel intensities are spread out, allowing areas of lower local
 # contrast to gain a higher contrast. This may enhance background noise.
-
 
 
 # <codecell>
@@ -237,7 +225,6 @@ d.set_title("Histogram equalization CDF");
 # increase the overall contrast of the image.
 
 
-
 # <codecell>
 
 vmin, vmax = stats.scoreatpercentile(data, (0.5, 99.5))
@@ -249,7 +236,6 @@ clipped = exposure.rescale_intensity(
 ).astype(np.float32)
 
 display(clipped)   
-
 
 
 # <codecell>
@@ -273,7 +259,6 @@ rescaled = clipped
 # images. It can be applied planewise to approximate a 3D result.
 
 
-
 # <codecell>
 
 sobel = np.empty_like(rescaled)
@@ -282,7 +267,6 @@ for plane, image in enumerate(rescaled):
     sobel[plane] = filters.sobel(image)
     
 display(sobel)   
-
 
 
 # <codecell>
@@ -315,7 +299,6 @@ show_plane(d, column_sobel, title="2D sobel, column=128")
 # image `spacing` will balance the contribution to the filter along each axis.
 
 
-
 # <codecell>
 
 base_sigma = 3.0
@@ -336,7 +319,6 @@ display(gaussian)
 # 
 # `skimage.filters.median` does not support three-dimensional images and needs
 # to be applied planewise.
-
 
 
 # <codecell>
@@ -366,7 +348,6 @@ display(median)
 # multichannel 2D data from grayscale 3D data.
 
 
-
 # <codecell>
 
 bilateral = np.empty_like(rescaled)
@@ -380,7 +361,6 @@ for index, plane in enumerate(rescaled):
 display(bilateral)   
 
 
-
 # <codecell>
 
 _, (a, b, c, d) = plt.subplots(nrows=1, ncols=4, figsize=(16, 4))
@@ -389,7 +369,6 @@ show_plane(a, rescaled[32], title="Original")
 show_plane(b, gaussian[32], title="Gaussian")
 show_plane(c, median[32], title="Median")
 show_plane(d, bilateral[32], title="Bilateral")   
-
 
 
 # <codecell>
@@ -411,7 +390,6 @@ denoised = bilateral
 # image.
 
 
-
 # <codecell>
 
 threshold_li = filters.threshold_li(denoised)
@@ -428,7 +406,6 @@ a.axvline(threshold_otsu, c="b")
 
 show_plane(b, li[32], title="Li's threshold = {:0.3f}".format(threshold_li))
 show_plane(c, otsu[32], title="Otsu's threshold = {:0.3f}".format(threshold_otsu))   
-
 
 
 # <codecell>
@@ -454,7 +431,6 @@ display(binary)
 # in `skimage.morphology`. Not all 2D structuring element have a 3D counterpart.
 # The simplest and most commonly used structuring elements are the `disk`/`ball`
 # and `square`/`cube`.
-
 
 
 # <codecell>
@@ -486,7 +462,6 @@ print("cube shape: {}".format(cube.shape))
 # 
 # These four operations (`closing`, `dilation`, `erosion`, `opening`) have
 # binary counterparts which are faster to compute than the grayscale algorithms.
-
 
 
 # <codecell>
@@ -522,7 +497,6 @@ show_plane(h, binary_opening[32], title="Binary opening")
 # from an image.
 
 
-
 # <codecell>
 
 binary_equalized = equalized >= filters.threshold_li(equalized)
@@ -555,7 +529,6 @@ show_plane(c, despeckled3[32], title="Despeckled, r = 3")
 # of accepted holes or objects. The `min_size` can be approximated by a cube.
 
 
-
 # <codecell>
 
 width = 20
@@ -566,7 +539,6 @@ remove_holes = morphology.remove_small_holes(
 )
 
 display(remove_holes)   
-
 
 
 # <codecell>
@@ -591,7 +563,6 @@ display(remove_objects)
 # each region to distinguish regions of interest.
 
 
-
 # <codecell>
 
 # Display label matrices with the background value 0 set to black.
@@ -601,7 +572,6 @@ def get_cmap(labels, name="viridis"):
     cmap.set_bad(color="black")
     
     return masked_labels, cmap   
-
 
 
 # <codecell>
@@ -617,7 +587,6 @@ display(masked_labels, cmap=cmap)
 # Connected components of the binary image are assigned the same label via
 # `skimage.measure.label`. Tightly packed cells  connected in the binary image
 # are assigned the same label.
-
 
 
 # <codecell>
@@ -644,7 +613,6 @@ show_plane(c, labels[32, :100, 125:] == 8, title="Labels = 8")
 # furthest from an edge have the highest intensity and should be identified as
 # markers using `skimage.feature.peak_local_max`. Regions with pinch points
 # should be assigned multiple markers.
-
 
 
 # <codecell>
@@ -680,7 +648,6 @@ display(masked_labels, cmap=cmap)
 # image are discarded before feature extraction.
 
 
-
 # <codecell>
 
 _, ((a, b, c), (d, e, f)) = plt.subplots(nrows=2, ncols=3, figsize=(16, 8))
@@ -699,7 +666,6 @@ show_plane(f, labels[32, 75:175, 125:] == 14, title="Labels = 14")
 # referred to as oversegmentation.
 
 
-
 # <codecell>
 
 _, (a, b, c) = plt.subplots(nrows=1, ncols=3, figsize=(16, 8))
@@ -716,7 +682,6 @@ show_plane(c, masked_labels[32, 150:, 118:248], cmap=cmap)
 # increasing distance map are assigned a single marker near their center. Cells
 # with uneven distance maps are assigned multiple markers, indicating the
 # presence of multiple local maxima.
-
 
 
 # <codecell>
@@ -739,7 +704,6 @@ for index, ax in enumerate(axes.flatten()):
     ax.plot(peaks[1], peaks[0], "r.")
     ax.set_xticks([])
     ax.set_yticks([])   
-
 
 
 # <codecell>
@@ -770,7 +734,6 @@ show_plane(f, distance[10:, 170:230, 179])
 # image.
 
 
-
 # <codecell>
 
 interior_labels = segmentation.clear_border(labels)
@@ -788,7 +751,6 @@ display(masked_labels, cmap=cmap)
 # list of image labels.
 
 
-
 # <codecell>
 
 relabeled, _, _ = segmentation.relabel_sequential(interior_labels)
@@ -804,7 +766,6 @@ print("relabeled labels: {}".format(np.unique(relabeled)))
 # 
 # Not all properties are supported for 3D data. Below are lists of supported and
 # unsupported 3D measurements.
-
 
 
 # <codecell>
@@ -833,7 +794,6 @@ print("  " + "\n  ".join(unsupported))
 # background.
 
 
-
 # <codecell>
 
 print("measured regions: {}".format([regionprop.label for regionprop in regionprops]))   
@@ -841,7 +801,6 @@ print("measured regions: {}".format([regionprop.label for regionprop in regionpr
 
 # <markdowncell>
 # `.prop` or `["prop"]` can be used to access extracted properties.
-
 
 
 # <codecell>
@@ -854,7 +813,6 @@ print("total pixels: {}".format(volumes))
 # <markdowncell>
 # Collected measurements can be further reduced by computing per-image
 # statistics such as total, minimum, maximum, mean, and standard deviation.
-
 
 
 # <codecell>
@@ -880,7 +838,6 @@ print("standard deviation: {:0.2f}".format(sd_volume))
 # the surface area of the mesh with `skimage.measure.mesh_surface_area`.
 
 
-
 # <codecell>
 
 # skimage.measure.marching_cubes expects ordering (row, col, pln)
@@ -898,7 +855,6 @@ print("surface area (actual): {:0.2f}".format(surface_area_actual))
 
 # <markdowncell>
 # The volume can be visualized using the mesh vertexes and faces.
-
 
 
 # <codecell>
@@ -953,7 +909,7 @@ plt.show()
 # 
 # Below is a 2D segmentation of the membrane:
 # 
-# ![](../_images/membrane_segmentation.png)
+# [../_images/membrane_segmentation.png](../_images/membrane_segmentation.png)
 # 
 # The membrane image can be loaded using
 # `skimage.io.imread("../images/cells_membrane.tif")`.
