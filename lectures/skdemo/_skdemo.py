@@ -452,14 +452,19 @@ def show_segmentation(im, segm, colors=None, labels=None, figsize=(12,2.5), show
     else:
         plt.imshow(im, cmap=cmap)
     plt.title('Input image')
-    
-    plt.sca(axes[1])
-    plt.imshow(color.label2rgb(segm, im, colors=colors, alpha=0.5))
-    plt.title('Overlay')
 
     plt.sca(axes[2])
-    plt.imshow(color.label2rgb(segm, None, colors=colors), cmap=ListedColormap(colors))
+    #rgb = color.label2rgb(segm, None, colors=colors)
+    # Had to replace label2rgb by direct mapping due to change in behavior
+    # in skimage
+    colp = color.label2rgb(np.array(range(segm.max()+1)), None, colors=colors)
+    rgb = colp[segm]
+    plt.imshow(rgb, cmap=ListedColormap(colors))
     plt.title('Segmentation')
+    
+    plt.sca(axes[1])
+    plt.imshow((np.atleast_3d(img_as_float(im))+rgb)/2)
+    plt.title('Overlay')
     
     cb=discrete_colorbar(colors, labels, ax=axes.ravel().tolist())
 
